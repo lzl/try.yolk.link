@@ -12,7 +12,9 @@ const App: React.FC = () => {
 
   async function handleNewRoomId() {
     try {
+      console.time('room-create');
       const res = await fetch("/api/room-create");
+      console.timeEnd('room-create');
       const data = await res.json();
       const roomRef = JSON.parse(data.roomRef);
       const roomId = roomRef["@ref"].id;
@@ -28,10 +30,12 @@ const App: React.FC = () => {
     try {
       const roomId = localStorage.getItem("roomId");
       console.log("Join room:", roomId);
+      console.time('token-create');
       const res = await fetch("/api/token-create", {
         method: "POST",
         body: JSON.stringify({ roomId })
       });
+      console.timeEnd('token-create');
       const data = await res.json();
       console.log('Token:', data.token);
     } catch (err) {
