@@ -1,34 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 // import logo from './logo.svg';
 // import './App.css';
-import nanoid from 'nanoid';
 
 const App: React.FC = () => {
-  const [roomId, setRoomId] = useState("")
+  const [roomId, setRoomId] = useState("");
 
   useEffect(() => {
-    const roomId = localStorage.getItem('roomId')
-    if (roomId) setRoomId(roomId)
-  }, [roomId])
+    const roomId = localStorage.getItem("roomId");
+    if (roomId) setRoomId(roomId);
+  }, [roomId]);
 
-  function handleNewRoomId() {
-    const roomId = nanoid()
-    console.log("Got a roomId:", roomId)
-    localStorage.setItem("roomId", roomId)
-    setRoomId(roomId)
+  async function handleNewRoomId() {
+    try {
+      const res = await fetch("/api/room-create");
+      const data = await res.json();
+      const roomRef = JSON.parse(data.roomRef);
+      const roomId = roomRef["@ref"].id;
+      console.log("Got a roomId:", roomId);
+      localStorage.setItem("roomId", roomId);
+      setRoomId(roomId);
+    } catch (err) {
+      console.log(err);
+    }
   }
-  
-  function handleJoinRoom() {
-    const roomId = localStorage.getItem('roomId')
-    console.log("Join room:", roomId)
+
+  async function handleJoinRoom() {
+    try {
+      const roomId = localStorage.getItem("roomId");
+      console.log("Join room:", roomId);
+      const res = await fetch("/api/room-get", {
+        method: "POST",
+        body: JSON.stringify({ roomId })
+      });
+      const data = await res.json();
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
     <div>
-      {roomId ? <button onClick={handleJoinRoom}>Join Room: {roomId}</button> : <button onClick={handleNewRoomId}>Generate Room ID</button>}
+      {roomId ? (
+        <button onClick={handleJoinRoom}>Join Room: {roomId}</button>
+      ) : (
+        <button onClick={handleNewRoomId}>Generate Room ID</button>
+      )}
     </div>
-  )
-}
+  );
+};
 
 // const App: React.FC = () => {
 //   return (

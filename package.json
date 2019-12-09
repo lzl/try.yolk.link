@@ -11,6 +11,7 @@
     "@types/node": "^12.12.14",
     "@types/react": "^16.9.15",
     "@types/react-dom": "^16.9.4",
+    "faunadb": "^2.10.0",
     "nanoid": "^2.1.7",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -18,7 +19,7 @@
     "typescript": "^3.7.3"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "dev": "BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -37,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@now/node": "^1.2.0"
   }
 }
