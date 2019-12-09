@@ -1,5 +1,6 @@
 import { NowRequest, NowResponse } from "@now/node";
 import faunadb from "faunadb";
+import fetch from "node-fetch";
 
 export default async (req: NowRequest, res: NowResponse) => {
   try {
@@ -12,7 +13,16 @@ export default async (req: NowRequest, res: NowResponse) => {
       q.Get(q.Ref(q.Collection("rooms"), roomId))
     );
 
-    res.status(200).json({ roomKey: room.data.roomKey });
+    const result = await fetch("https://rtc.lililulu.cn/api/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ roomId: room.data.key })
+    });
+    const data = await result.json();
+
+    res.status(200).json({ token: data.token });
   } catch (err) {
     console.log(err);
     res.status(404).json({ statusCode: 404, message: err.message });

@@ -28,12 +28,12 @@ const App: React.FC = () => {
     try {
       const roomId = localStorage.getItem("roomId");
       console.log("Join room:", roomId);
-      const res = await fetch("/api/room-get", {
+      const res = await fetch("/api/token-create", {
         method: "POST",
         body: JSON.stringify({ roomId })
       });
       const data = await res.json();
-      console.log(data);
+      console.log('Token:', data.token);
     } catch (err) {
       console.log(err);
     }

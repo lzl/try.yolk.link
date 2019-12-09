@@ -1,6 +1,7 @@
 import { NowRequest, NowResponse } from "@now/node";
 import faunadb from "faunadb";
 import nanoid from "nanoid";
+import fetch from "node-fetch";
 
 export default async (req: NowRequest, res: NowResponse) => {
   try {
@@ -8,17 +9,26 @@ export default async (req: NowRequest, res: NowResponse) => {
     const q = faunadb.query;
     const client = new faunadb.Client({ secret });
 
-    const roomKey = nanoid();
-    console.log("[SERVER] roomId:", roomKey);
+    const roomName = `try_yolk_link_${nanoid()}`;
+
+    const result = await fetch("https://rtc.lililulu.cn/api/rooms", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ roomName })
+    });
+    const data = await result.json();
+    const { roomKey } = data;
 
     const room: any = await client.query(
       q.Create(q.Collection("rooms"), {
         data: {
-          roomKey
+          name: roomName,
+          key: roomKey
         }
       })
     );
-
     const roomRef = JSON.stringify(room.ref);
 
     res.status(200).json({ roomRef });
