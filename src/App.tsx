@@ -17,22 +17,36 @@ const names = [
 ];
 const userName = names[Math.floor(Math.random() * names.length)];
 
+const roomId = "251260606233969163";
+
 const App: React.FC = () => {
-  const [hasRoomId, setHasRoomId] = useState(false);
+  // const [hasRoomId, setHasRoomId] = useState(false);
   const [token, setToken] = useState("");
   const [isJoined, setIsJoined] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
 
+  // get room id from localStorage
+  // useEffect(() => {
+  //   const roomId = localStorage.getItem("roomId");
+  //   if (roomId) setHasRoomId(true);
+  // }, []);
+
+  // check permission of devices
   useEffect(() => {
-    const roomId = localStorage.getItem("roomId");
-    if (roomId) setHasRoomId(true);
+    checkPermission().then(r => {
+      setHasPermission(r);
+      if (r) handleGetStream();
+    });
   }, []);
 
+  // get token if there is room id and has permission of devices
   useEffect(() => {
-    if (hasRoomId) {
-      const roomId = localStorage.getItem("roomId");
-      if (roomId) handleCreateToken();
+    if (hasPermission) {
+      // const roomId = localStorage.getItem("roomId");
+      // if (roomId) handleCreateToken();
+      handleCreateToken();
     }
-  }, [hasRoomId]);
+  }, [hasPermission]);
 
   useEffect(() => {
     // via https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onunload
@@ -46,25 +60,25 @@ const App: React.FC = () => {
     };
   }, []);
 
-  async function handleCreateRoomId() {
-    try {
-      console.time("room-create");
-      const res = await fetch("/api/room-create");
-      console.timeEnd("room-create");
-      const data = await res.json();
-      const roomRef = JSON.parse(data.roomRef);
-      const roomId = roomRef["@ref"].id;
-      console.log("Got a roomId:", roomId);
-      localStorage.setItem("roomId", roomId);
-      setHasRoomId(true);
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  // async function handleCreateRoomId() {
+  //   try {
+  //     console.time("room-create");
+  //     const res = await fetch("/api/room-create");
+  //     console.timeEnd("room-create");
+  //     const data = await res.json();
+  //     const roomRef = JSON.parse(data.roomRef);
+  //     const roomId = roomRef["@ref"].id;
+  //     console.log("Got a roomId:", roomId);
+  //     localStorage.setItem("roomId", roomId);
+  //     setHasRoomId(true);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 
   async function handleCreateToken() {
     try {
-      const roomId = localStorage.getItem("roomId");
+      // const roomId = localStorage.getItem("roomId");
       console.log("Join room:", roomId);
       console.time("token-create");
       const res = await fetch("/api/token-create", {
@@ -93,22 +107,76 @@ const App: React.FC = () => {
     }
   }
 
+  async function handleGetStream() {
+    try {
+      const stream = await getStream();
+      console.log("stream:", stream);
+      setHasPermission(true);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   if (isJoined) {
     return <div>Joined room.</div>;
   }
 
-  return (
-    <div>
-      {hasRoomId ? (
+  if (hasPermission) {
+    return (
+      <div>
         <button onClick={handleJoinRoom} disabled={!token}>
           Join Room
         </button>
-      ) : (
-        <button onClick={handleCreateRoomId}>Generate Room ID</button>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <button onClick={handleGetStream}>getStream</button>
     </div>
   );
 };
+
+async function checkPermission(): Promise<boolean> {
+  let result = false;
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+    console.log("enumerateDevices() not supported.");
+    return false;
+  }
+
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  devices.forEach(device => {
+    if (device.label) result = true;
+  });
+
+  console.log("hasPermission:", result);
+  return result;
+}
+
+async function getStream() {
+  const audioConstraintsForMic = new Owt.Base.AudioTrackConstraints(
+    Owt.Base.AudioSourceInfo.MIC
+  );
+  const videoConstraintsForCamera = new Owt.Base.VideoTrackConstraints(
+    Owt.Base.VideoSourceInfo.CAMERA
+  );
+  // videoConstraintsForCamera.resolution = new Owt.Base.Resolution(1280, 720);
+  // if (audioInputDeviceId) {
+  //   audioConstraintsForMic.deviceId = audioInputDeviceId
+  // }
+  // if (videoInputDeviceId) {
+  //   videoConstraintsForCamera.deviceId = videoInputDeviceId
+  // }
+
+  return await Owt.Base.MediaStreamFactory.createMediaStream(
+    new Owt.Base.StreamConstraints(
+      audioConstraintsForMic,
+      videoConstraintsForCamera
+    )
+  );
+}
 
 // const App: React.FC = () => {
 //   return (
