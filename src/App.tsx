@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 // import logo from './logo.svg';
 // import './App.css';
+import Video from "./component/Video";
 
 declare const Owt: any;
 const conference = new Owt.Conference.ConferenceClient();
@@ -16,14 +17,17 @@ const names = [
   "Michael"
 ];
 const userName = names[Math.floor(Math.random() * names.length)];
-
 const roomId = "251260606233969163";
+
+let LOCAL_STREAM: any;
+let PUBLISHED_STREAM: any;
 
 const App: React.FC = () => {
   // const [hasRoomId, setHasRoomId] = useState(false);
   const [token, setToken] = useState("");
   const [isJoined, setIsJoined] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
+  const [mixedMediaStream, setMixedMediaStream] = useState("");
 
   // get room id from localStorage
   // useEffect(() => {
@@ -49,9 +53,17 @@ const App: React.FC = () => {
   }, [hasPermission]);
 
   useEffect(() => {
+    return function cleanup() {
+      if (conference) conference.leave();
+      if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
+    };
+  }, []);
+
+  useEffect(() => {
     // via https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onunload
     function handleUnload() {
       if (conference) conference.leave();
+      if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
     }
     window.addEventListener("unload", handleUnload);
 
@@ -95,12 +107,56 @@ const App: React.FC = () => {
     }
   }
 
+  async function handleMixStreamToRoom(roomId: string, streamId: string) {
+    try {
+      await fetch("/api/stream-mix", {
+        method: "POST",
+        body: JSON.stringify({ roomId, streamId })
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async function handleJoinRoom() {
     try {
       if (token) {
         const info = await conference.join(token);
         console.log("Conference info:", info);
         setIsJoined(true);
+
+        // sub remote mix stream
+        const streams = info.remoteStreams;
+        let mixedStream;
+        for (const stream of streams) {
+          if (
+            stream.source.audio === "mixed" ||
+            stream.source.video === "mixed"
+          ) {
+            mixedStream = stream;
+            console.log("MixedStream:", mixedStream);
+          }
+        }
+        const mixStream = await handleSubscribeStream(mixedStream);
+        setMixedMediaStream(mixStream);
+
+        // pub local stream
+        const toPublishStream = new Owt.Base.LocalStream(
+          LOCAL_STREAM,
+          new Owt.Base.StreamSourceInfo("mic", "camera")
+        );
+        const stream = await conference.publish(toPublishStream, {
+          audio: [{ codec: { name: "opus" }, maxBitrate: 300 }],
+          video: [{ codec: { name: "h264" }, maxBitrate: 2048 }]
+        });
+        stream.addEventListener("error", (err: any) => {
+          console.log("Publication error: " + err.error.message);
+        });
+        console.log("published stream:", stream);
+        PUBLISHED_STREAM = stream;
+
+        // mix stream
+        await handleMixStreamToRoom(roomId, stream.id);
       }
     } catch (err) {
       console.log(err);
@@ -109,16 +165,42 @@ const App: React.FC = () => {
 
   async function handleGetStream() {
     try {
-      const stream = await getStream();
-      console.log("stream:", stream);
+      LOCAL_STREAM = await getStream();
+      console.log("LOCAL_STREAM:", LOCAL_STREAM);
       setHasPermission(true);
     } catch (err) {
       console.log(err);
     }
   }
 
+  async function handleSubscribeStream(stream: any) {
+    try {
+      const subscription = await conference.subscribe(stream, {
+        audio: { codecs: [{ name: "opus" }] },
+        video: { codecs: [{ name: "h264" }] }
+      });
+      console.log("Subscription info:", subscription);
+      subscription.addEventListener("error", (err: any) => {
+        console.log("Subscription error: " + err.error.message);
+      });
+      return stream.mediaStream;
+    } catch (e) {
+      console.log("handleSubscribe error:", e);
+    }
+  }
+
   if (isJoined) {
-    return <div>Joined room.</div>;
+    if (mixedMediaStream) {
+      return (
+        <div style={{ textAlign: "center" }}>
+          <div className="video-frame">
+            <Video stream={mixedMediaStream} muted={false} />
+          </div>
+        </div>
+      );
+    } else {
+      return <div>Joined room.</div>;
+    }
   }
 
   if (hasPermission) {
