@@ -3,6 +3,9 @@ import faunadb from "faunadb";
 import nanoid from "nanoid";
 import fetch from "node-fetch";
 
+// const apiUrl = "http://localhost:5000";
+const apiUrl = "https://rtc.lililulu.cn/api";
+
 export default async (req: NowRequest, res: NowResponse) => {
   try {
     const secret = process.env.FAUNADB_SECRET_KEY!;
@@ -11,7 +14,7 @@ export default async (req: NowRequest, res: NowResponse) => {
 
     const roomName = `try_yolk_link_${nanoid()}`;
 
-    const result = await fetch("https://rtc.lililulu.cn/api/rooms", {
+    const result = await fetch(`${apiUrl}/rooms`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

@@ -2,25 +2,80 @@ import React, { useState, useEffect } from "react";
 // import logo from './logo.svg';
 // import './App.css';
 
+declare const Owt: any;
+const conference = new Owt.Conference.ConferenceClient();
+
+const names = [
+  "Oliver",
+  "Jack",
+  "Harry",
+  "Jacob",
+  "James",
+  "John",
+  "Robert",
+  "Michael"
+];
+const userName = names[Math.floor(Math.random() * names.length)];
+
 const App: React.FC = () => {
-  const [roomId, setRoomId] = useState("");
+  const [hasRoomId, setHasRoomId] = useState(false);
+  const [token, setToken] = useState("");
+  const [isJoined, setIsJoined] = useState(false);
 
   useEffect(() => {
     const roomId = localStorage.getItem("roomId");
-    if (roomId) setRoomId(roomId);
-  }, [roomId]);
+    if (roomId) setHasRoomId(true);
+  }, []);
 
-  async function handleNewRoomId() {
+  useEffect(() => {
+    if (hasRoomId) {
+      const roomId = localStorage.getItem("roomId");
+      if (roomId) handleCreateToken();
+    }
+  }, [hasRoomId]);
+
+  useEffect(() => {
+    // via https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onunload
+    function handleUnload() {
+      if (conference) conference.leave();
+    }
+    window.addEventListener("unload", handleUnload);
+
+    return function cleanup() {
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, []);
+
+  async function handleCreateRoomId() {
     try {
-      console.time('room-create');
+      console.time("room-create");
       const res = await fetch("/api/room-create");
-      console.timeEnd('room-create');
+      console.timeEnd("room-create");
       const data = await res.json();
       const roomRef = JSON.parse(data.roomRef);
       const roomId = roomRef["@ref"].id;
       console.log("Got a roomId:", roomId);
       localStorage.setItem("roomId", roomId);
-      setRoomId(roomId);
+      setHasRoomId(true);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function handleCreateToken() {
+    try {
+      const roomId = localStorage.getItem("roomId");
+      console.log("Join room:", roomId);
+      console.time("token-create");
+      const res = await fetch("/api/token-create", {
+        method: "POST",
+        body: JSON.stringify({ roomId, userName })
+      });
+      console.timeEnd("token-create");
+      const data = await res.json();
+      const token = data.token;
+      console.log("Token:", token);
+      setToken(token);
     } catch (err) {
       console.log(err);
     }
@@ -28,27 +83,28 @@ const App: React.FC = () => {
 
   async function handleJoinRoom() {
     try {
-      const roomId = localStorage.getItem("roomId");
-      console.log("Join room:", roomId);
-      console.time('token-create');
-      const res = await fetch("/api/token-create", {
-        method: "POST",
-        body: JSON.stringify({ roomId })
-      });
-      console.timeEnd('token-create');
-      const data = await res.json();
-      console.log('Token:', data.token);
+      if (token) {
+        const info = await conference.join(token);
+        console.log("Conference info:", info);
+        setIsJoined(true);
+      }
     } catch (err) {
       console.log(err);
     }
   }
 
+  if (isJoined) {
+    return <div>Joined room.</div>;
+  }
+
   return (
     <div>
-      {roomId ? (
-        <button onClick={handleJoinRoom}>Join Room: {roomId}</button>
+      {hasRoomId ? (
+        <button onClick={handleJoinRoom} disabled={!token}>
+          Join Room
+        </button>
       ) : (
-        <button onClick={handleNewRoomId}>Generate Room ID</button>
+        <button onClick={handleCreateRoomId}>Generate Room ID</button>
       )}
     </div>
   );
