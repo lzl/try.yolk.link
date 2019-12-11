@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { RouteComponentProps } from "@reach/router";
+import { RouteComponentProps, navigate } from "@reach/router";
 import Video from "../component/Video";
 import Button from "../component/Button";
 import { Formik, Form, Field } from "formik";
@@ -73,23 +73,35 @@ const Room = (props: Props) => {
 
   useEffect(() => {
     return function cleanup() {
-      if (conference) conference.leave();
-      if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
+      if (isJoined) {
+        if (conference) conference.leave();
+        if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
+      }
+    };
+  }, [isJoined]);
+
+  useEffect(() => {
+    return function cleanup() {
+      if (LOCAL_STREAM) {
+        LOCAL_STREAM.getTracks().forEach((track: any) => track.stop());
+      }
     };
   }, []);
 
   useEffect(() => {
     // via https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onunload
     function handleUnload() {
-      if (conference) conference.leave();
-      if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
+      if (isJoined) {
+        if (conference) conference.leave();
+        if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
+      }
     }
     window.addEventListener("unload", handleUnload);
 
     return function cleanup() {
       window.removeEventListener("unload", handleUnload);
     };
-  }, []);
+  }, [isJoined]);
 
   async function handleMixStreamToRoom(roomId: string, streamId: string) {
     try {
@@ -180,10 +192,11 @@ const Room = (props: Props) => {
   if (isJoined) {
     if (mixedMediaStream) {
       return (
-        <div style={{ textAlign: "center" }}>
-          <div className="video-frame">
+        <div>
+          <div>
             <Video stream={mixedMediaStream} muted={false} />
           </div>
+          <Button onClick={() => navigate("/")}>Leave</Button>
         </div>
       );
     } else {
