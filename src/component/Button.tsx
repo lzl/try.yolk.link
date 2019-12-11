@@ -5,7 +5,7 @@ const Button = (props: any) => {
   return (
     <button disabled={props.disabled} onClick={props.onClick}>
       {props.children}
-      {props.disabled && (
+      {props.loading && (
         <span style={{ marginLeft: "5px" }}>
           <Loader />
         </span>

@@ -34,12 +34,18 @@ const Home = (props: RouteComponentProps) => {
   if (roomId) {
     return (
       <Link to={roomId}>
-        <Button disabled={isLoading}>Go to your room</Button>
+        <Button disabled={isLoading} loading={isLoading}>
+          Go to your room
+        </Button>
       </Link>
     );
   } else {
     return (
-      <Button onClick={handleCreateRoomId} disabled={isLoading}>
+      <Button
+        onClick={handleCreateRoomId}
+        disabled={isLoading}
+        loading={isLoading}
+      >
         Create a room
       </Button>
     );

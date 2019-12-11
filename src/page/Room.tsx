@@ -2,21 +2,11 @@ import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "@reach/router";
 import Video from "../component/Video";
 import Button from "../component/Button";
+import { Formik, Form, Field } from "formik";
 
 declare const Owt: any;
 const conference = new Owt.Conference.ConferenceClient();
 
-const names = [
-  "Oliver",
-  "Jack",
-  "Harry",
-  "Jacob",
-  "James",
-  "John",
-  "Robert",
-  "Michael"
-];
-const userName = names[Math.floor(Math.random() * names.length)];
 const DEFAULT_ROOM_ID = "251260606233969163";
 
 let LOCAL_STREAM: any;
@@ -31,11 +21,13 @@ const Room = (props: Props) => {
   const { roomId = DEFAULT_ROOM_ID } = props;
 
   const [token, setToken] = useState("");
+  const [isLoadingToken, setLoadingToken] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const [mixedMediaStream, setMixedMediaStream] = useState("");
   const [localStream, setLocalStream] = useState("");
   const [isLoadingLocalStream, setIsLoadingLocalStream] = useState(false);
+  const [userName, setUserName] = useState("");
 
   // check permission of devices
   useEffect(() => {
@@ -45,15 +37,22 @@ const Room = (props: Props) => {
     });
   }, []);
 
+  // get username
+  useEffect(() => {
+    const userName = localStorage.getItem("userName");
+    if (userName) setUserName(userName);
+  }, []);
+
   // get token if there is room id and has permission of devices
   useEffect(() => {
-    if (hasPermission) {
+    if (hasPermission && userName) {
       handleCreateToken();
     }
 
     async function handleCreateToken() {
       try {
         // const roomId = localStorage.getItem("roomId");
+        setLoadingToken(true);
         console.log("Join room:", roomId);
         console.time("token-create");
         const res = await fetch("/api/token-create", {
@@ -65,11 +64,12 @@ const Room = (props: Props) => {
         const token = data.token;
         console.log("Token:", token);
         setToken(token);
+        setLoadingToken(false);
       } catch (err) {
         console.log(err);
       }
     }
-  }, [hasPermission, roomId]);
+  }, [hasPermission, roomId, userName]);
 
   useEffect(() => {
     return function cleanup() {
@@ -195,7 +195,49 @@ const Room = (props: Props) => {
     return (
       <div>
         {localStream && <Video stream={localStream} muted={true} />}
-        <Button onClick={handleJoinRoom} disabled={!token}>
+        {userName ? (
+          <div>
+            {userName}{" "}
+            <Button
+              onClick={() => {
+                setUserName("");
+                setToken("");
+              }}
+            >
+              Change
+            </Button>
+          </div>
+        ) : (
+          <Formik
+            initialValues={{ userName: "" }}
+            onSubmit={(values, { setSubmitting }) => {
+              localStorage.setItem("userName", values.userName);
+              setUserName(values.userName);
+            }}
+          >
+            {({ isSubmitting }) => (
+              <Form>
+                <Field
+                  type="text"
+                  name="userName"
+                  placeholder="Your username"
+                />
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                >
+                  Submit
+                </Button>
+              </Form>
+            )}
+          </Formik>
+        )}
+        <Button
+          onClick={handleJoinRoom}
+          disabled={!token || !userName}
+          loading={isLoadingToken}
+        >
           Join Room
         </Button>
       </div>
@@ -204,7 +246,11 @@ const Room = (props: Props) => {
 
   return (
     <div>
-      <Button onClick={handleGetStream} disabled={isLoadingLocalStream}>
+      <Button
+        onClick={handleGetStream}
+        disabled={isLoadingLocalStream}
+        loading={isLoadingLocalStream}
+      >
         getStream
       </Button>
     </div>
