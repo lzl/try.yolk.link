@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Link, RouteComponentProps } from "@reach/router";
+import Button from "../component/Button";
 
 const Home = (props: RouteComponentProps) => {
-  const [roomId, setRoomId] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [roomId, setRoomId] = useState("");
 
   useEffect(() => {
     const roomId = localStorage.getItem("roomId");
     if (roomId) setRoomId(roomId);
+    setIsLoading(false);
   }, []);
 
   async function handleCreateRoomId() {
     try {
+      setIsLoading(true);
       console.time("room-create");
       const res = await fetch("/api/room-create");
       console.timeEnd("room-create");
@@ -21,6 +25,7 @@ const Home = (props: RouteComponentProps) => {
       localStorage.setItem("roomId", roomId);
       // navigate(`/${roomId}`);
       setRoomId(roomId);
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -29,12 +34,14 @@ const Home = (props: RouteComponentProps) => {
   if (roomId) {
     return (
       <Link to={roomId}>
-        <button>Go to your room</button>
+        <Button disabled={isLoading}>Go to your room</Button>
       </Link>
     );
   } else {
     return (
-      <button onClick={handleCreateRoomId}>Create a room</button>
+      <Button onClick={handleCreateRoomId} disabled={isLoading}>
+        Create a room
+      </Button>
     );
   }
 };

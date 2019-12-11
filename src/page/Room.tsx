@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "@reach/router";
 import Video from "../component/Video";
+import Button from "../component/Button";
 
 declare const Owt: any;
 const conference = new Owt.Conference.ConferenceClient();
@@ -34,6 +35,7 @@ const Room = (props: Props) => {
   const [hasPermission, setHasPermission] = useState(false);
   const [mixedMediaStream, setMixedMediaStream] = useState("");
   const [localStream, setLocalStream] = useState("");
+  const [isLoadingLocalStream, setIsLoadingLocalStream] = useState(false);
 
   // check permission of devices
   useEffect(() => {
@@ -148,10 +150,12 @@ const Room = (props: Props) => {
 
   async function handleGetStream() {
     try {
+      setIsLoadingLocalStream(true);
       LOCAL_STREAM = await getStream();
       console.log("LOCAL_STREAM:", LOCAL_STREAM);
       setHasPermission(true);
       setLocalStream(LOCAL_STREAM);
+      setIsLoadingLocalStream(false);
     } catch (err) {
       console.log(err);
     }
@@ -191,16 +195,18 @@ const Room = (props: Props) => {
     return (
       <div>
         {localStream && <Video stream={localStream} muted={true} />}
-        <button onClick={handleJoinRoom} disabled={!token}>
+        <Button onClick={handleJoinRoom} disabled={!token}>
           Join Room
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
     <div>
-      <button onClick={handleGetStream}>getStream</button>
+      <Button onClick={handleGetStream} disabled={isLoadingLocalStream}>
+        getStream
+      </Button>
     </div>
   );
 };
