@@ -16,7 +16,7 @@ const names = [
   "Michael"
 ];
 const userName = names[Math.floor(Math.random() * names.length)];
-const DEFAULT_ROOM_ID = "251260606233969163_1";
+const DEFAULT_ROOM_ID = "251260606233969163";
 
 let LOCAL_STREAM: any;
 let PUBLISHED_STREAM: any;
@@ -29,18 +29,11 @@ interface Props
 const Room = (props: Props) => {
   const { roomId = DEFAULT_ROOM_ID } = props;
 
-  // const [hasRoomId, setHasRoomId] = useState(false);
   const [token, setToken] = useState("");
   const [isJoined, setIsJoined] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const [mixedMediaStream, setMixedMediaStream] = useState("");
   const [localStream, setLocalStream] = useState("");
-
-  // get room id from localStorage
-  // useEffect(() => {
-  //   const roomId = localStorage.getItem("roomId");
-  //   if (roomId) setHasRoomId(true);
-  // }, []);
 
   // check permission of devices
   useEffect(() => {
@@ -95,22 +88,6 @@ const Room = (props: Props) => {
       window.removeEventListener("unload", handleUnload);
     };
   }, []);
-
-  // async function handleCreateRoomId() {
-  //   try {
-  //     console.time("room-create");
-  //     const res = await fetch("/api/room-create");
-  //     console.timeEnd("room-create");
-  //     const data = await res.json();
-  //     const roomRef = JSON.parse(data.roomRef);
-  //     const roomId = roomRef["@ref"].id;
-  //     console.log("Got a roomId:", roomId);
-  //     localStorage.setItem("roomId", roomId);
-  //     setHasRoomId(true);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
 
   async function handleMixStreamToRoom(roomId: string, streamId: string) {
     try {
