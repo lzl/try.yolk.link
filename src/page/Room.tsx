@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
 import Video from "../component/Video";
 import Button from "../component/Button";
@@ -29,6 +29,7 @@ const Room = (props: Props) => {
   const [localStream, setLocalStream] = useState("");
   const [isLoadingLocalStream, setIsLoadingLocalStream] = useState(false);
   const [userName, setUserName] = useState("");
+  const [isMute, setMute] = useState(false);
 
   // check permission of devices
   useEffect(() => {
@@ -190,15 +191,27 @@ const Room = (props: Props) => {
     }
   }
 
+  const handleToggleAudio = useCallback(async () => {
+    isMute
+      ? await PUBLISHED_STREAM.unmute("audio")
+      : await PUBLISHED_STREAM.mute("audio");
+    setMute(() => !isMute);
+  }, [isMute]);
+
   if (isJoined) {
     if (mixedMediaStream) {
       return (
         <div>
           <div>
             <Video stream={mixedMediaStream} muted={false} />
-            <VolumeMeterCanvas localStream={localStream} />
+            {!isMute && <VolumeMeterCanvas localStream={localStream} />}
           </div>
-          <Button onClick={() => navigate("/")}>Leave</Button>
+          <div>
+            <Button onClick={handleToggleAudio}>
+              {isMute ? "unmute" : "mute"}
+            </Button>
+            <Button onClick={() => navigate("/")}>Leave</Button>
+          </div>
         </div>
       );
     } else {
