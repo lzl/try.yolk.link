@@ -14,6 +14,7 @@
     "@types/reach__router": "^1.2.6",
     "@types/react": "^16.9.15",
     "@types/react-dom": "^16.9.4",
+    "@types/webrtc": "0.0.25",
     "faunadb": "^2.10.0",
     "formik": "^2.0.7",
     "nanoid": "^2.1.7",

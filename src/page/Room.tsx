@@ -35,17 +35,17 @@ const Room = (props: Props) => {
   // const [userName, setUserName] = useState("");
   // const [isMute, setMute] = useState(false);
 
-  const hasPermission = useStore(state => state.hasPermission);
+  const hasPermission: boolean = useStore(state => state.hasPermission);
   const setHasPermission = useStore(state => state.setHasPermission);
-  const localStream = useStore(state => state.localStream);
+  const localStream: MediaStream = useStore(state => state.localStream);
   const setLocalStream = useStore(state => state.setLocalStream);
-  const token = useStore(state => state.token);
+  const token: string = useStore(state => state.token);
   const setToken = useStore(state => state.setToken);
-  const userName = useStore(state => state.userName);
+  const userName: string = useStore(state => state.userName);
   const setUserName = useStore(state => state.setUserName);
   const mixedMediaStream = useStore(state => state.mixedMediaStream);
   const setMixedMediaStream = useStore(state => state.setMixedMediaStream);
-  const isMicMuted = useStore(state => state.isMicMuted);
+  const isMicMuted: boolean = useStore(state => state.isMicMuted);
   const setMicMuted = useStore(state => state.setMicMuted);
 
   const handleGetStream = useCallback(async () => {
@@ -336,7 +336,7 @@ async function checkPermission(): Promise<boolean> {
   return result;
 }
 
-async function getStream() {
+async function getStream(): Promise<MediaStream> {
   const audioConstraintsForMic = new Owt.Base.AudioTrackConstraints(
     Owt.Base.AudioSourceInfo.MIC
   );
