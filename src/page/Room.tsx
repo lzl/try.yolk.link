@@ -128,8 +128,8 @@ const Room = (props: Props) => {
         let mixedStream;
         for (const stream of streams) {
           if (
-            stream.source.audio === "mixed" ||
-            stream.source.video === "mixed"
+            stream.id.includes("common") &&
+            (stream.source.audio === "mixed" || stream.source.video === "mixed")
           ) {
             mixedStream = stream;
             console.log("MixedStream:", mixedStream);

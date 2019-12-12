@@ -23,7 +23,6 @@ export default async (req: NowRequest, res: NowResponse) => {
       },
       body: JSON.stringify({ roomId: room.data.key, streamId })
     });
-    
 
     res.status(200).json({ ok: true });
   } catch (err) {
