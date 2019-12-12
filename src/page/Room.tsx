@@ -25,7 +25,7 @@ const Room = (props: Props) => {
   console.log("RENDER_COUNTER:", RENDER_COUNTER++);
   const { roomId = DEFAULT_ROOM_ID } = props;
 
-  // const [token, setToken] = useState("");
+  const [token, setToken] = useState("");
   const [isLoadingToken, setLoadingToken] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
   // const [hasPermission, setHasPermission] = useState(false);
@@ -39,8 +39,8 @@ const Room = (props: Props) => {
   const setHasPermission = useStore(state => state.setHasPermission);
   const localStream: MediaStream = useStore(state => state.localStream);
   const setLocalStream = useStore(state => state.setLocalStream);
-  const token: string = useStore(state => state.token);
-  const setToken = useStore(state => state.setToken);
+  // const token: string = useStore(state => state.token);
+  // const setToken = useStore(state => state.setToken);
   const userName: string = useStore(state => state.userName);
   const setUserName = useStore(state => state.setUserName);
   const mixedMediaStream = useStore(state => state.mixedMediaStream);
