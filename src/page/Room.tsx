@@ -4,7 +4,7 @@ import Video from "../component/Video";
 import Button from "../component/Button";
 import { Formik, Form, Field } from "formik";
 import { VolumeMeterCanvas } from "../component/VolumeMeter";
-import create from "zustand";
+import { useStore } from '../store';
 
 let RENDER_COUNTER = 1; // max: 8, 10
 
@@ -15,21 +15,6 @@ const DEFAULT_ROOM_ID = "251260606233969163";
 
 // let LOCAL_STREAM: any;
 let PUBLISHED_STREAM: any;
-
-const [useStore] = create(set => ({
-  hasPermission: false,
-  setHasPermission: (hasPermission: boolean) => set({ hasPermission }),
-  localStream: null,
-  setLocalStream: (localStream: any) => set({ localStream }),
-  token: "",
-  setToken: (token: string) => set({ token }),
-  userName: "",
-  setUserName: (userName: string) => set({ userName }),
-  mixedMediaStream: null,
-  setMixedMediaStream: (mixedMediaStream: any) => set({ mixedMediaStream }),
-  isMicMuted: false,
-  setMicMuted: (isMicMuted: boolean) => set({ isMicMuted })
-}));
 
 interface Props
   extends RouteComponentProps<{
