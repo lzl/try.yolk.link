@@ -4,14 +4,22 @@ import Video from "../component/Video";
 import Button from "../component/Button";
 import { Formik, Form, Field } from "formik";
 import { VolumeMeterCanvas } from "../component/VolumeMeter";
+import create from "zustand";
+
+let RENDER_COUNTER = 1; // max: 9, 11
 
 declare const Owt: any;
 const conference = new Owt.Conference.ConferenceClient();
 
 const DEFAULT_ROOM_ID = "251260606233969163";
 
-let LOCAL_STREAM: any;
+// let LOCAL_STREAM: any;
 let PUBLISHED_STREAM: any;
+
+const [useStore] = create(set => ({
+  localStream: null,
+  setLocalStream: (localStream: any) => set({ localStream })
+}));
 
 interface Props
   extends RouteComponentProps<{
@@ -19,6 +27,7 @@ interface Props
   }> {}
 
 const Room = (props: Props) => {
+  console.log("RENDER_COUNTER:", RENDER_COUNTER++);
   const { roomId = DEFAULT_ROOM_ID } = props;
 
   const [token, setToken] = useState("");
@@ -26,10 +35,25 @@ const Room = (props: Props) => {
   const [isJoined, setIsJoined] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const [mixedMediaStream, setMixedMediaStream] = useState("");
-  const [localStream, setLocalStream] = useState("");
+  // const [localStream, setLocalStream] = useState("");
   const [isLoadingLocalStream, setIsLoadingLocalStream] = useState(false);
   const [userName, setUserName] = useState("");
   const [isMute, setMute] = useState(false);
+
+  const localStream = useStore(state => state.localStream);
+  const setLocalStream = useStore(state => state.setLocalStream);
+
+  const handleGetStream = useCallback(async () => {
+    try {
+      setIsLoadingLocalStream(true);
+      const localStream = await getStream();
+      setHasPermission(true);
+      setLocalStream(localStream);
+      setIsLoadingLocalStream(false);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [setLocalStream]);
 
   // check permission of devices
   useEffect(() => {
@@ -37,7 +61,7 @@ const Room = (props: Props) => {
       setHasPermission(r);
       if (r) handleGetStream();
     });
-  }, []);
+  }, [handleGetStream]);
 
   // get username
   useEffect(() => {
@@ -84,11 +108,11 @@ const Room = (props: Props) => {
 
   useEffect(() => {
     return function cleanup() {
-      if (LOCAL_STREAM) {
-        LOCAL_STREAM.getTracks().forEach((track: any) => track.stop());
+      if (localStream) {
+        localStream.getTracks().forEach((track: any) => track.stop());
       }
     };
-  }, []);
+  }, [localStream]);
 
   useEffect(() => {
     // via https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onunload
@@ -140,7 +164,7 @@ const Room = (props: Props) => {
 
         // pub local stream
         const toPublishStream = new Owt.Base.LocalStream(
-          LOCAL_STREAM,
+          localStream,
           new Owt.Base.StreamSourceInfo("mic", "camera")
         );
         const stream = await conference.publish(toPublishStream, {
@@ -162,18 +186,18 @@ const Room = (props: Props) => {
     }
   }
 
-  async function handleGetStream() {
-    try {
-      setIsLoadingLocalStream(true);
-      LOCAL_STREAM = await getStream();
-      console.log("LOCAL_STREAM:", LOCAL_STREAM);
-      setHasPermission(true);
-      setLocalStream(LOCAL_STREAM);
-      setIsLoadingLocalStream(false);
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  // async function handleGetStream() {
+  //   try {
+  //     setIsLoadingLocalStream(true);
+  //     LOCAL_STREAM = await getStream();
+  //     console.log("LOCAL_STREAM:", LOCAL_STREAM);
+  //     setHasPermission(true);
+  //     setLocalStream(LOCAL_STREAM);
+  //     setIsLoadingLocalStream(false);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 
   async function handleSubscribeStream(stream: any) {
     try {
