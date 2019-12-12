@@ -3,6 +3,7 @@ import { RouteComponentProps, navigate } from "@reach/router";
 import Video from "../component/Video";
 import Button from "../component/Button";
 import { Formik, Form, Field } from "formik";
+import { VolumeMeterCanvas } from "../component/VolumeMeter";
 
 declare const Owt: any;
 const conference = new Owt.Conference.ConferenceClient();
@@ -195,6 +196,7 @@ const Room = (props: Props) => {
         <div>
           <div>
             <Video stream={mixedMediaStream} muted={false} />
+            <VolumeMeterCanvas localStream={localStream} />
           </div>
           <Button onClick={() => navigate("/")}>Leave</Button>
         </div>
@@ -207,7 +209,12 @@ const Room = (props: Props) => {
   if (hasPermission) {
     return (
       <div>
-        {localStream && <Video stream={localStream} muted={true} />}
+        {localStream && (
+          <div>
+            <Video stream={localStream} muted={true} />
+            <VolumeMeterCanvas localStream={localStream} />
+          </div>
+        )}
         {userName ? (
           <div>
             {userName}{" "}
