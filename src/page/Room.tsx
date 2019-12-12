@@ -6,7 +6,7 @@ import { Formik, Form, Field } from "formik";
 import { VolumeMeterCanvas } from "../component/VolumeMeter";
 import create from "zustand";
 
-let RENDER_COUNTER = 1; // max: 9, 11
+let RENDER_COUNTER = 1; // max: 8, 10
 
 declare const Owt: any;
 const conference = new Owt.Conference.ConferenceClient();
@@ -17,8 +17,18 @@ const DEFAULT_ROOM_ID = "251260606233969163";
 let PUBLISHED_STREAM: any;
 
 const [useStore] = create(set => ({
+  hasPermission: false,
+  setHasPermission: (hasPermission: boolean) => set({ hasPermission }),
   localStream: null,
-  setLocalStream: (localStream: any) => set({ localStream })
+  setLocalStream: (localStream: any) => set({ localStream }),
+  token: "",
+  setToken: (token: string) => set({ token }),
+  userName: "",
+  setUserName: (userName: string) => set({ userName }),
+  mixedMediaStream: null,
+  setMixedMediaStream: (mixedMediaStream: any) => set({ mixedMediaStream }),
+  isMicMuted: false,
+  setMicMuted: (isMicMuted: boolean) => set({ isMicMuted })
 }));
 
 interface Props
@@ -30,18 +40,28 @@ const Room = (props: Props) => {
   console.log("RENDER_COUNTER:", RENDER_COUNTER++);
   const { roomId = DEFAULT_ROOM_ID } = props;
 
-  const [token, setToken] = useState("");
+  // const [token, setToken] = useState("");
   const [isLoadingToken, setLoadingToken] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
-  const [hasPermission, setHasPermission] = useState(false);
-  const [mixedMediaStream, setMixedMediaStream] = useState("");
+  // const [hasPermission, setHasPermission] = useState(false);
+  // const [mixedMediaStream, setMixedMediaStream] = useState("");
   // const [localStream, setLocalStream] = useState("");
   const [isLoadingLocalStream, setIsLoadingLocalStream] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [isMute, setMute] = useState(false);
+  // const [userName, setUserName] = useState("");
+  // const [isMute, setMute] = useState(false);
 
+  const hasPermission = useStore(state => state.hasPermission);
+  const setHasPermission = useStore(state => state.setHasPermission);
   const localStream = useStore(state => state.localStream);
   const setLocalStream = useStore(state => state.setLocalStream);
+  const token = useStore(state => state.token);
+  const setToken = useStore(state => state.setToken);
+  const userName = useStore(state => state.userName);
+  const setUserName = useStore(state => state.setUserName);
+  const mixedMediaStream = useStore(state => state.mixedMediaStream);
+  const setMixedMediaStream = useStore(state => state.setMixedMediaStream);
+  const isMicMuted = useStore(state => state.isMicMuted);
+  const setMicMuted = useStore(state => state.setMicMuted);
 
   const handleGetStream = useCallback(async () => {
     try {
@@ -53,7 +73,7 @@ const Room = (props: Props) => {
     } catch (err) {
       console.log(err);
     }
-  }, [setLocalStream]);
+  }, [setLocalStream, setHasPermission]);
 
   // check permission of devices
   useEffect(() => {
@@ -61,13 +81,13 @@ const Room = (props: Props) => {
       setHasPermission(r);
       if (r) handleGetStream();
     });
-  }, [handleGetStream]);
+  }, [handleGetStream, setHasPermission]);
 
   // get username
   useEffect(() => {
     const userName = localStorage.getItem("userName");
     if (userName) setUserName(userName);
-  }, []);
+  }, [setUserName]);
 
   // get token if there is room id and has permission of devices
   useEffect(() => {
@@ -95,7 +115,7 @@ const Room = (props: Props) => {
         console.log(err);
       }
     }
-  }, [hasPermission, roomId, userName]);
+  }, [hasPermission, roomId, userName, setToken]);
 
   useEffect(() => {
     return function cleanup() {
@@ -216,11 +236,11 @@ const Room = (props: Props) => {
   }
 
   const handleToggleAudio = useCallback(async () => {
-    isMute
+    isMicMuted
       ? await PUBLISHED_STREAM.unmute("audio")
       : await PUBLISHED_STREAM.mute("audio");
-    setMute(() => !isMute);
-  }, [isMute]);
+    setMicMuted(!isMicMuted);
+  }, [isMicMuted, setMicMuted]);
 
   if (isJoined) {
     if (mixedMediaStream) {
@@ -228,11 +248,11 @@ const Room = (props: Props) => {
         <div>
           <div>
             <Video stream={mixedMediaStream} muted={false} />
-            {!isMute && <VolumeMeterCanvas localStream={localStream} />}
+            {!isMicMuted && <VolumeMeterCanvas localStream={localStream} />}
           </div>
           <div>
             <Button onClick={handleToggleAudio}>
-              {isMute ? "unmute" : "mute"}
+              {isMicMuted ? "unmute" : "mute"}
             </Button>
             <Button onClick={() => navigate("/")}>Leave</Button>
           </div>
