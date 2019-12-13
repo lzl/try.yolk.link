@@ -69,17 +69,19 @@ export default async (req: NowRequest, res: NowResponse) => {
     const data = await result.json();
     const { roomKey } = data;
 
-    const room: any = await client.query(
-      q.Create(q.Collection("rooms"), {
-        data: {
-          name: roomName,
-          key: roomKey
-        }
-      })
+    const roomId: string = await client.query(
+      q.Select(
+        ["ref", "id"],
+        q.Create(q.Collection("rooms"), {
+          data: {
+            name: roomName,
+            key: roomKey
+          }
+        })
+      )
     );
-    const roomRef = JSON.stringify(room.ref);
-
-    res.status(200).json({ roomRef });
+    
+    res.status(200).json({ roomId });
   } catch (err) {
     console.log(err);
     res.status(404).json({ statusCode: 404, message: err.message });

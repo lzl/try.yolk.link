@@ -19,8 +19,7 @@ const Home = (props: RouteComponentProps) => {
       const res = await fetch("/api/room-create");
       console.timeEnd("room-create");
       const data = await res.json();
-      const roomRef = JSON.parse(data.roomRef);
-      const roomId: string = roomRef["@ref"].id;
+      const roomId: string = data.roomId;
       console.log("Got a roomId:", roomId);
       localStorage.setItem("roomId", roomId);
       // navigate(`/${roomId}`);
