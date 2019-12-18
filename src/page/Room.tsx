@@ -5,7 +5,7 @@ import Button from "../component/Button";
 import { Formik, Form, Field } from "formik";
 import { VolumeMeterCanvas } from "../component/VolumeMeter";
 import { useStore } from "../store";
-import { useLogRoomDuration } from "../hook/useLog";
+import { useLogRoomJoined, useLogRoomDuration } from "../hook/useLog";
 
 let RENDER_COUNTER = 1; // max: 8, 10
 
@@ -49,6 +49,7 @@ const Room = (props: Props) => {
   const isMicMuted: boolean = useStore(state => state.isMicMuted);
   const setMicMuted = useStore(state => state.setMicMuted);
 
+  useLogRoomJoined({ roomId });
   useLogRoomDuration({ roomId });
 
   const handleGetStream = useCallback(async () => {

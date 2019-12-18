@@ -1,10 +1,22 @@
 import { useEffect, useCallback } from "react";
 
-interface IUseLogRoomDuration {
+interface IRoomId {
   roomId: string;
 }
 
-export function useLogRoomDuration({ roomId }: IUseLogRoomDuration) {
+export function useLogRoomJoined({ roomId }: IRoomId) {
+  useEffect(() => {
+    if (!navigator.sendBeacon) return;
+
+    const body = JSON.stringify({
+      type: "room_joined",
+      roomId,
+    });
+    navigator.sendBeacon("/api/log", body);
+  }, [roomId]);
+}
+
+export function useLogRoomDuration({ roomId }: IRoomId) {
   const send = useCallback(
     ({ startedAt, event }) => {
       if (!navigator.sendBeacon) return;
@@ -29,7 +41,6 @@ export function useLogRoomDuration({ roomId }: IUseLogRoomDuration) {
     const event = "unmount";
 
     return function cleanup() {
-      if (!navigator.sendBeacon) return;
       send({ startedAt, event });
     };
   }, [send]);
@@ -39,7 +50,6 @@ export function useLogRoomDuration({ roomId }: IUseLogRoomDuration) {
     const event = "unload";
 
     function handleUnload() {
-      if (!navigator.sendBeacon) return;
       send({ startedAt, event });
     }
     window.addEventListener("unload", handleUnload);
