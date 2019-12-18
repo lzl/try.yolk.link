@@ -69,18 +69,35 @@ export default async (req: NowRequest, res: NowResponse) => {
     const data = await result.json();
     const { roomKey } = data;
 
-    const roomId: string = await client.query(
-      q.Select(
-        ["ref", "id"],
-        q.Create(q.Collection("rooms"), {
-          data: {
-            name: roomName,
-            key: roomKey
-          }
-        })
+    const { roomId } = await client.query(
+      q.Let(
+        {
+          roomId: q.Select(
+            ["ref", "id"],
+            q.Create(q.Collection("rooms"), {
+              data: {
+                name: roomName,
+                key: roomKey
+              }
+            })
+          ),
+          now: q.Now(),
+          log: q.Create(q.Collection("logs"), {
+            data: {
+              type: "room_creation",
+              roomId: q.Var("roomId"),
+              createdAt: q.ToMillis(q.Var("now")),
+              createdDate: q.ToDate(q.Var("now")),
+              createdDateString: q.ToString(q.ToDate(q.Var("now")))
+            }
+          })
+        },
+        {
+          roomId: q.Var("roomId")
+        }
       )
     );
-    
+
     res.status(200).json({ roomId });
   } catch (err) {
     console.log(err);

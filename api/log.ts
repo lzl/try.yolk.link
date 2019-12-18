@@ -10,9 +10,23 @@ export default async (req: NowRequest, res: NowResponse) => {
     const data = JSON.parse(req.body);
 
     await client.query(
-      q.Create(q.Collection("logs"), {
-        data
-      })
+      q.Let(
+        {
+          now: q.Now(),
+          createdAt: q.ToMillis(q.Var("now")),
+          createdDate: q.ToDate(q.Var("now")),
+          createdDateString: q.ToString(q.Var("createdDate"))
+        },
+        {
+          result: q.Create(q.Collection("logs"), {
+            data: q.Merge(data, {
+              createdAt: q.Var("createdAt"),
+              createdDate: q.Var("createdDate"),
+              createdDateString: q.Var("createdDateString")
+            })
+          })
+        }
+      )
     );
 
     res.status(200).json({ ok: true });
