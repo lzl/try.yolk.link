@@ -21,7 +21,7 @@ export default async (req: NowRequest, res: NowResponse) => {
             room_creation_day_count: q.Count(
               q.Match(q.Index("logs_by_type_and_createdDateString"), [
                 "room_creation",
-                q.Var("roomId")
+                q.Var("date")
               ])
             ),
             room_joined_day_count: q.Count(
