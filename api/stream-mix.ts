@@ -12,8 +12,8 @@ export default async (req: NowRequest, res: NowResponse) => {
     const client = new faunadb.Client({ secret });
 
     const { roomId, streamId } = JSON.parse(req.body);
-    const room: any = await client.query(
-      q.Get(q.Ref(q.Collection("rooms"), roomId))
+    const key = await client.query(
+      q.Select(["data", "key"], q.Get(q.Ref(q.Collection("rooms"), roomId)))
     );
 
     await fetch(`${apiUrl}/mix`, {
@@ -21,7 +21,7 @@ export default async (req: NowRequest, res: NowResponse) => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ roomId: room.data.key, streamId })
+      body: JSON.stringify({ roomId: key, streamId })
     });
 
     res.status(200).json({ ok: true });

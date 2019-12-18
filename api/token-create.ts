@@ -12,8 +12,8 @@ export default async (req: NowRequest, res: NowResponse) => {
     const client = new faunadb.Client({ secret });
 
     const { roomId, userName } = JSON.parse(req.body);
-    const room: any = await client.query(
-      q.Get(q.Ref(q.Collection("rooms"), roomId))
+    const key: any = await client.query(
+      q.Select(["data", "key"], q.Get(q.Ref(q.Collection("rooms"), roomId)))
     );
 
     const result = await fetch(`${apiUrl}/token`, {
@@ -21,7 +21,7 @@ export default async (req: NowRequest, res: NowResponse) => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ roomId: room.data.key, userName })
+      body: JSON.stringify({ roomId: key, userName })
     });
     const data = await result.json();
 
