@@ -39,16 +39,12 @@ export default async (req: NowRequest, res: NowResponse) => {
             room_duration_day_sum: q.Sum(
               q.Select(
                 ["data"],
-                q.Map(
-                  q.Paginate(
-                    q.Match(q.Index("logs_by_type_and_createdDateString"), [
-                      "room_duration",
-                      q.Var("date")
-                    ])
-                  ),
-                  q.Lambda(
-                    "X",
-                    q.Select(["data", "duration"], q.Get(q.Var("X")))
+                q.Paginate(
+                  q.Match(
+                    q.Index(
+                      "logs_by_type_and_createdDateString_return_duration"
+                    ),
+                    ["room_duration", q.Var("date")]
                   )
                 )
               )
@@ -56,17 +52,11 @@ export default async (req: NowRequest, res: NowResponse) => {
             room_duration_roomId_sum: q.Sum(
               q.Select(
                 ["data"],
-                q.Map(
-                  q.Paginate(
-                    q.Match(q.Index("logs_by_type_and_roomId"), [
-                      "room_duration",
-                      q.Var("roomId")
-                    ])
-                  ),
-                  q.Lambda(
-                    "X",
-                    q.Select(["data", "duration"], q.Get(q.Var("X")))
-                  )
+                q.Paginate(
+                  q.Match(q.Index("logs_by_type_and_roomId_return_duration"), [
+                    "room_duration",
+                    q.Var("roomId")
+                  ])
                 )
               )
             )
