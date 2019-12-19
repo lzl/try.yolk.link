@@ -100,7 +100,6 @@ export default async (req: NowRequest, res: NowResponse) => {
 
     res.status(200).json({ roomId });
   } catch (err) {
-    console.log(err);
-    res.status(404).json({ statusCode: 404, message: err.message });
+    res.status(404).json({ statusCode: 404, message: err.name });
   }
 };

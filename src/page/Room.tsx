@@ -37,6 +37,7 @@ const Room = (props: Props) => {
   // const [isMute, setMute] = useState(false);
   const [hasNotFoundError, setHasNotFoundError] = useState(false);
   const [hasNotAllowedError, setHasNotAllowedError] = useState(false);
+  const [error, setError] = useState("");
 
   // const hasPermission: boolean = useStore(state => state.hasPermission);
   // const setHasPermission = useStore(state => state.setHasPermission);
@@ -107,15 +108,21 @@ const Room = (props: Props) => {
         });
         console.timeEnd("token-create");
         const data = await res.json();
-        const token = data.token;
-        console.log("Token:", token);
-        setToken(token);
-        setLoadingToken(false);
+        if (data.statusCode === 404) {
+          if (data.message === "NotFound") {
+            throw new Error("roomId not found");
+          }
+        } else {
+          const token = data.token;
+          console.log("Token:", token);
+          setToken(token);
+          setLoadingToken(false);
+        }
       } catch (err) {
-        console.log(err);
+        setError(err.message);
       }
     }
-  }, [hasPermission, roomId, userName, setToken]);
+  }, [hasPermission, roomId, userName]);
 
   useEffect(() => {
     return function cleanup() {
@@ -241,6 +248,10 @@ const Room = (props: Props) => {
       : await PUBLISHED_STREAM.mute("audio");
     setMicMuted(!isMicMuted);
   }, [isMicMuted, setMicMuted]);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   if (hasNotFoundError) {
     return <div>没有找到麦克风或摄像头</div>;
