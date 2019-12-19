@@ -259,11 +259,11 @@ const Room = (props: Props) => {
   }
 
   if (hasNotFoundError) {
-    return <div>没有找到麦克风或摄像头</div>;
+    return <div>NotFoundError</div>;
   }
 
   if (hasNotAllowedError) {
-    return <div>无法获取麦克风或摄像头的使用权限</div>;
+    return <div>NotAllowedError</div>;
   }
 
   if (isJoined) {
