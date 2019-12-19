@@ -432,16 +432,12 @@ async function getStream(): Promise<MediaStream> {
 let RESOLUTION_RETRY = 0;
 const resolutions = [
   { width: 1920, height: 1080 },
-  { width: 1280, height: 720 },
-  { width: 1080, height: 1920 },
-  { width: 720, height: 1280 }
+  { width: 1280, height: 720 }
 ];
 function getResolution() {
   console.log("RESOLUTION_RETRY:", RESOLUTION_RETRY);
   if (RESOLUTION_RETRY >= resolutions.length) return false;
-  const selected = resolutions[RESOLUTION_RETRY];
-  RESOLUTION_RETRY++;
-  return selected;
+  return resolutions[RESOLUTION_RETRY++];
 }
 
 export default Room;
