@@ -1,5 +1,6 @@
 import { NowRequest, NowResponse } from "@now/node";
 import faunadb from "faunadb";
+import fetch from "node-fetch";
 
 export default async (req: NowRequest, res: NowResponse) => {
   try {
@@ -27,6 +28,17 @@ export default async (req: NowRequest, res: NowResponse) => {
           })
         }
       )
+    );
+
+    await fetch(
+      "https://hooks.slack.com/services/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",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text: JSON.stringify(data) })
+      }
     );
 
     res.status(200).json({ ok: true });
