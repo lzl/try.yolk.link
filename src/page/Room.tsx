@@ -55,6 +55,16 @@ const Room = (props: Props) => {
   useLogRoomJoined({ roomId });
   useLogRoomDuration({ roomId });
 
+  useEffect(() => {
+    if (!localStream) return;
+    console.log("localStream:", localStream);
+    const trackers = localStream.getVideoTracks();
+    trackers.forEach(t => {
+      const constraints = t.getConstraints();
+      console.log("localstream resolution:", constraints);
+    });
+  }, [localStream]);
+
   const handleGetStream = useCallback(async () => {
     try {
       setIsLoadingLocalStream(true);
@@ -63,6 +73,7 @@ const Room = (props: Props) => {
       setLocalStream(localStream);
       setIsLoadingLocalStream(false);
     } catch (err) {
+      console.log(err);
       setIsLoadingLocalStream(false);
       const name = err.name;
 
@@ -70,6 +81,8 @@ const Room = (props: Props) => {
         setHasNotFoundError(true);
       } else if (name === "NotAllowedError") {
         setHasNotAllowedError(true);
+      } else if (name === "OverconstrainedError") {
+        handleGetStream();
       }
     }
   }, [setLocalStream]);
@@ -394,7 +407,13 @@ async function getStream(): Promise<MediaStream> {
   const videoConstraintsForCamera = new Owt.Base.VideoTrackConstraints(
     Owt.Base.VideoSourceInfo.CAMERA
   );
-  // videoConstraintsForCamera.resolution = new Owt.Base.Resolution(1280, 720);
+  const resolution = getResolution();
+  if (resolution) {
+    videoConstraintsForCamera.resolution = new Owt.Base.Resolution(
+      resolution.width,
+      resolution.height
+    );
+  }
   // if (audioInputDeviceId) {
   //   audioConstraintsForMic.deviceId = audioInputDeviceId
   // }
@@ -408,6 +427,21 @@ async function getStream(): Promise<MediaStream> {
       videoConstraintsForCamera
     )
   );
+}
+
+let RESOLUTION_RETRY = 0;
+const resolutions = [
+  { width: 1920, height: 1080 },
+  { width: 1280, height: 720 },
+  { width: 1080, height: 1920 },
+  { width: 720, height: 1280 }
+];
+function getResolution() {
+  console.log("RESOLUTION_RETRY:", RESOLUTION_RETRY);
+  if (RESOLUTION_RETRY >= resolutions.length) return false;
+  const selected = resolutions[RESOLUTION_RETRY];
+  RESOLUTION_RETRY++;
+  return selected;
 }
 
 export default Room;
