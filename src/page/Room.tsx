@@ -51,8 +51,8 @@ const Room = (props: Props) => {
   const isMicMuted: boolean = useStore(state => state.isMicMuted);
   const setMicMuted = useStore(state => state.setMicMuted);
 
-  // useLogRoomJoined({ roomId });
-  // useLogRoomDuration({ roomId });
+  useLogRoomJoined({ roomId });
+  useLogRoomDuration({ roomId });
 
   const handleGetStream = useCallback(async () => {
     try {
