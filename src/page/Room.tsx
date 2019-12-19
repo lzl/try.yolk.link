@@ -74,6 +74,33 @@ const Room = (props: Props) => {
     }
   }, [setLocalStream]);
 
+  const handleCreateToken = useCallback(async () => {
+    try {
+      setLoadingToken(true);
+      console.log("Join room:", roomId);
+      console.time("token-create");
+      const res = await fetch("/api/token-create", {
+        method: "POST",
+        body: JSON.stringify({ roomId, userName })
+      });
+      console.timeEnd("token-create");
+      const data = await res.json();
+      if (data.statusCode === 404) {
+        if (data.message === "NotFound") {
+          throw new Error("roomId not found");
+        }
+      } else {
+        const token: string = data.token;
+        console.log("Token:", token);
+        setToken(token);
+        setLoadingToken(false);
+        return token;
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  }, [roomId, userName]);
+
   // check permission of devices
   useEffect(() => {
     checkPermission().then(result => {
@@ -95,34 +122,7 @@ const Room = (props: Props) => {
     if (hasPermission && userName) {
       handleCreateToken();
     }
-
-    async function handleCreateToken() {
-      try {
-        // const roomId = localStorage.getItem("roomId");
-        setLoadingToken(true);
-        console.log("Join room:", roomId);
-        console.time("token-create");
-        const res = await fetch("/api/token-create", {
-          method: "POST",
-          body: JSON.stringify({ roomId, userName })
-        });
-        console.timeEnd("token-create");
-        const data = await res.json();
-        if (data.statusCode === 404) {
-          if (data.message === "NotFound") {
-            throw new Error("roomId not found");
-          }
-        } else {
-          const token = data.token;
-          console.log("Token:", token);
-          setToken(token);
-          setLoadingToken(false);
-        }
-      } catch (err) {
-        setError(err.message);
-      }
-    }
-  }, [hasPermission, roomId, userName]);
+  }, [hasPermission, userName, handleCreateToken]);
 
   useEffect(() => {
     return function cleanup() {
@@ -167,7 +167,7 @@ const Room = (props: Props) => {
     }
   }
 
-  async function handleJoinRoom() {
+  async function handleJoinRoom(token: string) {
     try {
       if (token) {
         const info = await conference.join(token);
@@ -208,8 +208,13 @@ const Room = (props: Props) => {
         await handleMixStreamToRoom(roomId, stream.id);
       }
     } catch (err) {
+      setToken("");
       console.log(err.name); // Error
       console.log(err.message); // Expired || Unknown
+      if (err.message === "Expired") {
+        const token = await handleCreateToken();
+        if (token) handleJoinRoom(token);
+      }
     }
   }
 
@@ -330,7 +335,7 @@ const Room = (props: Props) => {
           </Formik>
         )}
         <Button
-          onClick={handleJoinRoom}
+          onClick={() => handleJoinRoom(token)}
           disabled={!token || !userName}
           loading={isLoadingToken}
         >
