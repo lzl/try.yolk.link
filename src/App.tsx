@@ -3,6 +3,9 @@ import { Router } from "@reach/router";
 import Home from "./page/Home";
 import Room from "./page/Room";
 import "./App.css";
+import VConsole from "vconsole";
+
+new VConsole();
 
 const App: React.FC = () => {
   return (
