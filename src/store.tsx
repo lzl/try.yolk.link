@@ -1,8 +1,8 @@
 import create from "zustand";
 
 export const [useStore] = create(set => ({
-  hasPermission: false,
-  setHasPermission: (hasPermission: boolean) => set({ hasPermission }),
+  // hasPermission: false,
+  // setHasPermission: (hasPermission: boolean) => set({ hasPermission }),
   localStream: null,
   setLocalStream: (localStream: any) => set({ localStream }),
   // token: "",

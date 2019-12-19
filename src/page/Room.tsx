@@ -29,15 +29,17 @@ const Room = (props: Props) => {
   const [token, setToken] = useState("");
   const [isLoadingToken, setLoadingToken] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
-  // const [hasPermission, setHasPermission] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
   // const [mixedMediaStream, setMixedMediaStream] = useState("");
   // const [localStream, setLocalStream] = useState("");
   const [isLoadingLocalStream, setIsLoadingLocalStream] = useState(false);
   // const [userName, setUserName] = useState("");
   // const [isMute, setMute] = useState(false);
+  const [hasNotFoundError, setHasNotFoundError] = useState(false);
+  const [hasNotAllowedError, setHasNotAllowedError] = useState(false);
 
-  const hasPermission: boolean = useStore(state => state.hasPermission);
-  const setHasPermission = useStore(state => state.setHasPermission);
+  // const hasPermission: boolean = useStore(state => state.hasPermission);
+  // const setHasPermission = useStore(state => state.setHasPermission);
   const localStream: MediaStream = useStore(state => state.localStream);
   const setLocalStream = useStore(state => state.setLocalStream);
   // const token: string = useStore(state => state.token);
@@ -49,8 +51,8 @@ const Room = (props: Props) => {
   const isMicMuted: boolean = useStore(state => state.isMicMuted);
   const setMicMuted = useStore(state => state.setMicMuted);
 
-  useLogRoomJoined({ roomId });
-  useLogRoomDuration({ roomId });
+  // useLogRoomJoined({ roomId });
+  // useLogRoomDuration({ roomId });
 
   const handleGetStream = useCallback(async () => {
     try {
@@ -60,17 +62,26 @@ const Room = (props: Props) => {
       setLocalStream(localStream);
       setIsLoadingLocalStream(false);
     } catch (err) {
-      console.log(err);
+      setIsLoadingLocalStream(false);
+      const name = err.name;
+
+      if (name === "NotFoundError") {
+        setHasNotFoundError(true);
+      } else if (name === "NotAllowedError") {
+        setHasNotAllowedError(true);
+      }
     }
-  }, [setLocalStream, setHasPermission]);
+  }, [setLocalStream]);
 
   // check permission of devices
   useEffect(() => {
-    checkPermission().then(r => {
-      setHasPermission(r);
-      if (r) handleGetStream();
+    checkPermission().then(result => {
+      const { hasPermission, hasDeviceInput } = result;
+      if (!hasDeviceInput) setHasNotFoundError(true);
+      setHasPermission(hasPermission);
+      if (hasPermission) handleGetStream();
     });
-  }, [handleGetStream, setHasPermission]);
+  }, [handleGetStream]);
 
   // get username
   useEffect(() => {
@@ -231,6 +242,14 @@ const Room = (props: Props) => {
     setMicMuted(!isMicMuted);
   }, [isMicMuted, setMicMuted]);
 
+  if (hasNotFoundError) {
+    return <div>没有找到麦克风或摄像头</div>;
+  }
+
+  if (hasNotAllowedError) {
+    return <div>无法获取麦克风或摄像头的使用权限</div>;
+  }
+
   if (isJoined) {
     if (mixedMediaStream) {
       return (
@@ -323,21 +342,33 @@ const Room = (props: Props) => {
   );
 };
 
-async function checkPermission(): Promise<boolean> {
-  let result = false;
-
+async function checkPermission(): Promise<{
+  hasPermission: boolean;
+  hasDeviceInput: boolean;
+}> {
   if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
     console.log("enumerateDevices() not supported.");
-    return false;
+    return {
+      hasPermission: false,
+      hasDeviceInput: false
+    };
   }
 
   const devices = await navigator.mediaDevices.enumerateDevices();
-  devices.forEach(device => {
-    if (device.label) result = true;
-  });
 
-  console.log("hasPermission:", result);
-  return result;
+  const hasPermission = devices.some(device => device.label !== "");
+  const hasAudioInput = devices.some(device => device.kind === "audioinput");
+  const hasVideoInput = devices.some(device => device.kind === "videoinput");
+
+  console.log("devices:", devices);
+  console.log("hasPermission:", hasPermission);
+  console.log("hasAudioInput:", hasAudioInput);
+  console.log("hasVideoInput:", hasVideoInput);
+
+  return {
+    hasPermission,
+    hasDeviceInput: hasAudioInput && hasVideoInput
+  };
 }
 
 async function getStream(): Promise<MediaStream> {
