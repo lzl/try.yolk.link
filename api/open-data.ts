@@ -18,6 +18,9 @@ export default async (req: NowRequest, res: NowResponse) => {
             room_creation_all_count: q.Count(
               q.Match(q.Index("logs_by_type_to_count"), ["room_creation"])
             ),
+            room_visited_all_count: q.Count(
+              q.Match(q.Index("logs_by_type_to_count"), ["room_visited"])
+            ),
             room_joined_all_count: q.Count(
               q.Match(q.Index("logs_by_type_to_count"), ["room_joined"])
             ),
@@ -37,6 +40,12 @@ export default async (req: NowRequest, res: NowResponse) => {
             room_creation_today_count: q.Count(
               q.Match(q.Index("logs_by_type_and_createdDateString_to_count"), [
                 "room_creation",
+                q.Var("date")
+              ])
+            ),
+            room_visited_today_count: q.Count(
+              q.Match(q.Index("logs_by_type_and_createdDateString_to_count"), [
+                "room_visited",
                 q.Var("date")
               ])
             ),
