@@ -38,6 +38,26 @@ export function useLogRoomJoined({ roomId }: any) {
   }, [roomId]);
 }
 
+export function useLogRoomInterval({ roomId }: any) {
+  useEffect(() => {
+    if (!navigator.sendBeacon) return;
+
+    const duration = 5 * 60 * 1000; // every 5 minites
+    const id = setInterval(() => {
+      const body = formatBody({
+        type: "room_interval",
+        roomId,
+        duration
+      });
+      navigator.sendBeacon("/api/log", body);
+    }, duration);
+
+    return function cleanup() {
+      clearInterval(id);
+    };
+  }, [roomId]);
+}
+
 export function useLogRoomDuration({ roomId }: any) {
   const send = useCallback(
     ({ startedAt, event }) => {

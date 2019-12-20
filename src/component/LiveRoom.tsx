@@ -4,7 +4,11 @@ import { useStore } from "../store";
 import Video from "./Video";
 import { VolumeMeterCanvas } from "./VolumeMeter";
 import Button from "./Button";
-import { useLogRoomJoined, useLogRoomDuration } from "../hook/useLog";
+import {
+  useLogRoomJoined,
+  useLogRoomDuration,
+  useLogRoomInterval
+} from "../hook/useLog";
 
 declare const Owt: any;
 
@@ -25,6 +29,7 @@ const LiveRoom = (props: any) => {
 
   useLogRoomJoined({ roomId });
   useLogRoomDuration({ roomId });
+  useLogRoomInterval({ roomId });
 
   const handleSubscribeStream = useCallback(
     async (stream: any) => {
