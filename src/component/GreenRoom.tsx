@@ -4,6 +4,7 @@ import { useStore } from "../store";
 import Video from "./Video";
 import { VolumeMeterCanvas } from "./VolumeMeter";
 import Button from "./Button";
+import { useLogRoomVisited } from "../hook/useLog";
 
 declare const Owt: any;
 
@@ -27,6 +28,8 @@ const GreenRoom = (props: any) => {
   const userName: string = useStore(state => state.userName);
   const setUserName = useStore(state => state.setUserName);
   const setConferenceInfo = useStore(state => state.setConferenceInfo);
+
+  useLogRoomVisited({ roomId });
 
   const handleGetStream = useCallback(async () => {
     setIsLoadingLocalStream(true);

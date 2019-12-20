@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "@reach/router";
+import nanoid from "nanoid";
 import { useStore } from "../store";
-
 import GreenRoom from "../component/GreenRoom";
 import LiveRoom from "../component/LiveRoom";
 
-let RENDER_COUNTER = 1; // max: 8, 10
+let RENDER_COUNTER = 1;
 
 declare const Owt: any;
 const conference = new Owt.Conference.ConferenceClient();
@@ -24,6 +24,14 @@ const Room = (props: Props) => {
   const [isJoined, setIsJoined] = useState(false);
 
   const localStream: MediaStream = useStore(state => state.localStream);
+
+  useEffect(() => {
+    const deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+      const deviceId = nanoid();
+      localStorage.setItem("deviceId", deviceId);
+    }
+  }, []);
 
   useEffect(() => {
     return function cleanup() {

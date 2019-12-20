@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, RouteComponentProps } from "@reach/router";
+import nanoid from "nanoid";
 import Button from "../component/Button";
 
 const Home = (props: RouteComponentProps) => {
@@ -10,6 +11,14 @@ const Home = (props: RouteComponentProps) => {
     const roomId = localStorage.getItem("roomId");
     if (roomId) setRoomId(roomId);
     setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+      const deviceId = nanoid();
+      localStorage.setItem("deviceId", deviceId);
+    }
   }, []);
 
   async function handleCreateRoomId() {

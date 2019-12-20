@@ -4,6 +4,7 @@ import { useStore } from "../store";
 import Video from "./Video";
 import { VolumeMeterCanvas } from "./VolumeMeter";
 import Button from "./Button";
+import { useLogRoomJoined, useLogRoomDuration } from "../hook/useLog";
 
 declare const Owt: any;
 
@@ -21,6 +22,9 @@ const LiveRoom = (props: any) => {
 
   const conferenceInfo = useStore(state => state.conferenceInfo);
   const localStream: MediaStream = useStore(state => state.localStream);
+
+  useLogRoomJoined({ roomId });
+  useLogRoomDuration({ roomId });
 
   const handleSubscribeStream = useCallback(
     async (stream: any) => {

@@ -1,29 +1,51 @@
 import { useEffect, useCallback } from "react";
 
-interface IRoomId {
-  roomId: string;
+function formatBody(body: any) {
+  const userName = localStorage.getItem("userName");
+  if (userName) {
+    body = { ...body, userName };
+  }
+
+  const deviceId = localStorage.getItem("deviceId");
+  if (deviceId) {
+    body = { ...body, deviceId };
+  }
+
+  return JSON.stringify(body);
 }
 
-export function useLogRoomJoined({ roomId }: IRoomId) {
+export function useLogRoomVisited({ roomId }: any) {
   useEffect(() => {
     if (!navigator.sendBeacon) return;
 
-    const body = JSON.stringify({
-      type: "room_joined",
-      roomId,
+    const body = formatBody({
+      type: "room_visited",
+      roomId
     });
     navigator.sendBeacon("/api/log", body);
   }, [roomId]);
 }
 
-export function useLogRoomDuration({ roomId }: IRoomId) {
+export function useLogRoomJoined({ roomId }: any) {
+  useEffect(() => {
+    if (!navigator.sendBeacon) return;
+
+    const body = formatBody({
+      type: "room_joined",
+      roomId
+    });
+    navigator.sendBeacon("/api/log", body);
+  }, [roomId]);
+}
+
+export function useLogRoomDuration({ roomId }: any) {
   const send = useCallback(
     ({ startedAt, event }) => {
       if (!navigator.sendBeacon) return;
 
       const endedAt = Date.now();
       const duration = endedAt - startedAt;
-      const body = JSON.stringify({
+      const body = formatBody({
         type: "room_duration",
         roomId,
         startedAt,
