@@ -26,6 +26,7 @@ const GreenRoom = (props: any) => {
   const setLocalStream = useStore(state => state.setLocalStream);
   const userName: string = useStore(state => state.userName);
   const setUserName = useStore(state => state.setUserName);
+  const setConferenceInfo = useStore(state => state.setConferenceInfo);
 
   const handleGetStream = useCallback(async () => {
     setIsLoadingLocalStream(true);
@@ -40,7 +41,10 @@ const GreenRoom = (props: any) => {
         setHasNotFoundError(true);
       } else if (name === "NotAllowedError") {
         setHasNotAllowedError(true);
-      } else if (name === "OverconstrainedError") {
+      } else if (
+        name === "OverconstrainedError" ||
+        message === "Invalid constraint"
+      ) {
         handleGetStream();
       } else {
         setError(`${name}: ${message}`);
@@ -117,17 +121,17 @@ const GreenRoom = (props: any) => {
 
   useEffect(() => {
     return function cleanup() {
-      if (localStream) {
-        localStream.getTracks().forEach((track: any) => track.stop());
-      }
+      RENDER_COUNTER = 0;
+      RESOLUTION_RETRY = 0;
     };
-  }, [localStream]);
+  }, []);
 
   async function handleJoinRoom(token: string) {
     try {
       if (token) {
         const info = await conference.join(token);
-        console.log("Conference info:", info);
+        console.log("1:", info);
+        setConferenceInfo(info);
         setIsJoined(true);
       }
     } catch (err) {
@@ -185,11 +189,7 @@ const GreenRoom = (props: any) => {
           >
             {({ isSubmitting }) => (
               <Form>
-                <Field
-                  type="text"
-                  name="userName"
-                  placeholder="Your Name"
-                />
+                <Field type="text" name="userName" placeholder="Your Name" />
                 <Button
                   type="submit"
                   disabled={isSubmitting}
