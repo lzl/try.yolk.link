@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, RouteComponentProps } from "@reach/router";
+import { Helmet } from "react-helmet";
 import nanoid from "nanoid";
 import Button from "../component/Button";
+import packageJson from "../../package.json";
 
 const Home = (props: RouteComponentProps) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -39,23 +41,35 @@ const Home = (props: RouteComponentProps) => {
     }
   }
 
+  const helmet = (
+    <Helmet>
+      <title>Yolk Link v{packageJson.version}</title>
+    </Helmet>
+  );
+
   if (roomId) {
     return (
-      <Link to={roomId}>
-        <Button disabled={isLoading} loading={isLoading}>
-          Go to your room
-        </Button>
-      </Link>
+      <>
+        {helmet}
+        <Link to={roomId}>
+          <Button disabled={isLoading} loading={isLoading}>
+            Go to your room
+          </Button>
+        </Link>
+      </>
     );
   } else {
     return (
-      <Button
-        onClick={handleCreateRoomId}
-        disabled={isLoading}
-        loading={isLoading}
-      >
-        Create a room
-      </Button>
+      <>
+        {helmet}
+        <Button
+          onClick={handleCreateRoomId}
+          disabled={isLoading}
+          loading={isLoading}
+        >
+          Create a room
+        </Button>
+      </>
     );
   }
 };
