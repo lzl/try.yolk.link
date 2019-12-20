@@ -1,138 +1,59 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { RouteComponentProps, navigate } from "@reach/router";
-import Video from "../component/Video";
-import Button from "../component/Button";
 import { Formik, Form, Field } from "formik";
-import { VolumeMeterCanvas } from "../component/VolumeMeter";
 import { useStore } from "../store";
-import { useLogRoomJoined, useLogRoomDuration } from "../hook/useLog";
-
-import GreenRoom from "../component/GreenRoom";
-
-let RENDER_COUNTER = 1; // max: 8, 10
+import Video from "./Video";
+import { VolumeMeterCanvas } from "./VolumeMeter";
+import Button from "./Button";
 
 declare const Owt: any;
-const conference = new Owt.Conference.ConferenceClient();
 
+let RENDER_COUNTER = 1;
 const DEFAULT_ROOM_ID = "251260606233969163";
 
-// let LOCAL_STREAM: any;
-let PUBLISHED_STREAM: any;
-
-interface Props
-  extends RouteComponentProps<{
-    roomId: string;
-  }> {}
-
-const Room = (props: Props) => {
-  console.log("Room RENDER_COUNTER:", RENDER_COUNTER++);
-  const { roomId = DEFAULT_ROOM_ID } = props;
-
-  const [isJoined, setIsJoined] = useState(false);
-
-  useEffect(() => {
-    return function cleanup() {
-      if (isJoined) {
-        if (conference) conference.leave();
-        if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
-      }
-    };
-  }, [isJoined]);
-
-  useEffect(() => {
-    // via https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onunload
-    function handleUnload() {
-      if (isJoined) {
-        if (conference) conference.leave();
-        if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
-      }
-    }
-    window.addEventListener("unload", handleUnload);
-
-    return function cleanup() {
-      window.removeEventListener("unload", handleUnload);
-    };
-  }, [isJoined]);
-
-  return isJoined ? (
-    <div>Joined Room</div>
-  ) : (
-    <GreenRoom
-      conference={conference}
-      roomId={roomId}
-      setIsJoined={setIsJoined}
-    />
-  );
-};
-
-const RoomOld = (props: Props) => {
-  console.log("RENDER_COUNTER:", RENDER_COUNTER++);
-  const { roomId = DEFAULT_ROOM_ID } = props;
+const GreenRoom = (props: any) => {
+  console.log("GreenRoom RENDER_COUNTER:", RENDER_COUNTER++);
+  const { conference, roomId = DEFAULT_ROOM_ID, setIsJoined } = props;
 
   const [token, setToken] = useState("");
   const [isLoadingToken, setLoadingToken] = useState(false);
-  const [isJoined, setIsJoined] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
-  // const [mixedMediaStream, setMixedMediaStream] = useState("");
-  // const [localStream, setLocalStream] = useState("");
   const [isLoadingLocalStream, setIsLoadingLocalStream] = useState(false);
-  // const [userName, setUserName] = useState("");
-  // const [isMute, setMute] = useState(false);
   const [hasNotFoundError, setHasNotFoundError] = useState(false);
   const [hasNotAllowedError, setHasNotAllowedError] = useState(false);
   const [error, setError] = useState("");
 
-  // const hasPermission: boolean = useStore(state => state.hasPermission);
-  // const setHasPermission = useStore(state => state.setHasPermission);
   const localStream: MediaStream = useStore(state => state.localStream);
   const setLocalStream = useStore(state => state.setLocalStream);
-  // const token: string = useStore(state => state.token);
-  // const setToken = useStore(state => state.setToken);
   const userName: string = useStore(state => state.userName);
   const setUserName = useStore(state => state.setUserName);
-  const mixedMediaStream = useStore(state => state.mixedMediaStream);
-  const setMixedMediaStream = useStore(state => state.setMixedMediaStream);
-  const isMicMuted: boolean = useStore(state => state.isMicMuted);
-  const setMicMuted = useStore(state => state.setMicMuted);
-
-  // useLogRoomJoined({ roomId });
-  // useLogRoomDuration({ roomId });
-
-  useEffect(() => {
-    if (!localStream) return;
-    console.log("localStream:", localStream);
-    const trackers = localStream.getVideoTracks();
-    trackers.forEach(t => {
-      const constraints = t.getConstraints();
-      console.log("localstream resolution:", constraints);
-    });
-  }, [localStream]);
 
   const handleGetStream = useCallback(async () => {
+    setIsLoadingLocalStream(true);
+
     try {
-      setIsLoadingLocalStream(true);
       const localStream = await getStream();
       setHasPermission(true);
       setLocalStream(localStream);
-      setIsLoadingLocalStream(false);
     } catch (err) {
-      console.log(err);
-      setIsLoadingLocalStream(false);
-      const name = err.name;
-
+      const { name, message } = err;
       if (name === "NotFoundError") {
         setHasNotFoundError(true);
       } else if (name === "NotAllowedError") {
         setHasNotAllowedError(true);
       } else if (name === "OverconstrainedError") {
         handleGetStream();
+      } else {
+        setError(`${name}: ${message}`);
       }
     }
+
+    setIsLoadingLocalStream(false);
   }, [setLocalStream]);
 
   const handleCreateToken = useCallback(async () => {
+    setLoadingToken(true);
+
     try {
-      setLoadingToken(true);
       console.log("Join room:", roomId);
       console.time("token-create");
       const res = await fetch("/api/token-create", {
@@ -153,8 +74,11 @@ const RoomOld = (props: Props) => {
         return token;
       }
     } catch (err) {
-      setError(err.message);
+      const { name, message } = err;
+      setError(`${name}: ${message}`);
     }
+
+    setLoadingToken(false);
   }, [roomId, userName]);
 
   // check permission of devices
@@ -180,14 +104,16 @@ const RoomOld = (props: Props) => {
     }
   }, [hasPermission, userName, handleCreateToken]);
 
+  // get resolution of local stream
   useEffect(() => {
-    return function cleanup() {
-      if (isJoined) {
-        if (conference) conference.leave();
-        if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
-      }
-    };
-  }, [isJoined]);
+    if (!localStream || !localStream.getVideoTracks) return;
+    console.log("localStream:", localStream);
+    const trackers = localStream.getVideoTracks();
+    trackers.forEach(t => {
+      const constraints = t.getConstraints();
+      console.log("localstream resolution:", constraints);
+    });
+  }, [localStream]);
 
   useEffect(() => {
     return function cleanup() {
@@ -197,118 +123,24 @@ const RoomOld = (props: Props) => {
     };
   }, [localStream]);
 
-  useEffect(() => {
-    // via https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onunload
-    function handleUnload() {
-      if (isJoined) {
-        if (conference) conference.leave();
-        if (PUBLISHED_STREAM) PUBLISHED_STREAM.stop();
-      }
-    }
-    window.addEventListener("unload", handleUnload);
-
-    return function cleanup() {
-      window.removeEventListener("unload", handleUnload);
-    };
-  }, [isJoined]);
-
-  async function handleMixStreamToRoom(roomId: string, streamId: string) {
-    try {
-      await fetch("/api/stream-mix", {
-        method: "POST",
-        body: JSON.stringify({ roomId, streamId })
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   async function handleJoinRoom(token: string) {
     try {
       if (token) {
         const info = await conference.join(token);
         console.log("Conference info:", info);
         setIsJoined(true);
-
-        // sub remote mix stream
-        const streams = info.remoteStreams;
-        let mixedStream;
-        for (const stream of streams) {
-          if (
-            stream.id.includes("common") &&
-            (stream.source.audio === "mixed" || stream.source.video === "mixed")
-          ) {
-            mixedStream = stream;
-            console.log("MixedStream:", mixedStream);
-          }
-        }
-        const mixStream = await handleSubscribeStream(mixedStream);
-        setMixedMediaStream(mixStream);
-
-        // pub local stream
-        const toPublishStream = new Owt.Base.LocalStream(
-          localStream,
-          new Owt.Base.StreamSourceInfo("mic", "camera")
-        );
-        const stream = await conference.publish(toPublishStream, {
-          audio: [{ codec: { name: "opus" }, maxBitrate: 300 }],
-          video: [{ codec: { name: "h264" }, maxBitrate: 2048 }]
-        });
-        stream.addEventListener("error", (err: any) => {
-          console.log("Publication error: " + err.error.message);
-        });
-        console.log("published stream:", stream);
-        PUBLISHED_STREAM = stream;
-
-        // mix stream
-        await handleMixStreamToRoom(roomId, stream.id);
       }
     } catch (err) {
+      const { name, message } = err;
       setToken("");
-      console.log(err.name); // Error
-      console.log(err.message); // Expired || Unknown
-      if (err.message === "Expired") {
+      if (message === "Expired") {
         const token = await handleCreateToken();
         if (token) handleJoinRoom(token);
+      } else {
+        setError(`${name}: ${message}`);
       }
     }
   }
-
-  // async function handleGetStream() {
-  //   try {
-  //     setIsLoadingLocalStream(true);
-  //     LOCAL_STREAM = await getStream();
-  //     console.log("LOCAL_STREAM:", LOCAL_STREAM);
-  //     setHasPermission(true);
-  //     setLocalStream(LOCAL_STREAM);
-  //     setIsLoadingLocalStream(false);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
-
-  async function handleSubscribeStream(stream: any) {
-    try {
-      const subscription = await conference.subscribe(stream, {
-        audio: { codecs: [{ name: "opus" }] },
-        video: { codecs: [{ name: "h264" }] }
-      });
-      console.log("Subscription info:", subscription);
-      subscription.addEventListener("error", (err: any) => {
-        console.log("Subscription error: " + err.error.message);
-      });
-      return stream.mediaStream;
-    } catch (e) {
-      console.log("handleSubscribe error:", e);
-    }
-  }
-
-  const handleToggleAudio = useCallback(async () => {
-    isMicMuted
-      ? await PUBLISHED_STREAM.unmute("audio")
-      : await PUBLISHED_STREAM.mute("audio");
-    setMicMuted(!isMicMuted);
-  }, [isMicMuted, setMicMuted]);
 
   if (error) {
     return <div>{error}</div>;
@@ -320,27 +152,6 @@ const RoomOld = (props: Props) => {
 
   if (hasNotAllowedError) {
     return <div>NotAllowedError</div>;
-  }
-
-  if (isJoined) {
-    if (mixedMediaStream) {
-      return (
-        <div>
-          <div>
-            <Video stream={mixedMediaStream} muted={false} />
-            {!isMicMuted && <VolumeMeterCanvas localStream={localStream} />}
-          </div>
-          <div>
-            <Button onClick={handleToggleAudio}>
-              {isMicMuted ? "unmute" : "mute"}
-            </Button>
-            <Button onClick={() => navigate("/")}>Leave</Button>
-          </div>
-        </div>
-      );
-    } else {
-      return <div>Joined room.</div>;
-    }
   }
 
   if (hasPermission) {
@@ -377,7 +188,7 @@ const RoomOld = (props: Props) => {
                 <Field
                   type="text"
                   name="userName"
-                  placeholder="Your username"
+                  placeholder="Your Name"
                 />
                 <Button
                   type="submit"
@@ -483,4 +294,4 @@ function getResolution() {
   return resolutions[RESOLUTION_RETRY++];
 }
 
-export default Room;
+export default GreenRoom;
