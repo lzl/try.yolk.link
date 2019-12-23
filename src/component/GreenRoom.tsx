@@ -154,7 +154,14 @@ const GreenRoom = (props: any) => {
   }
 
   if (hasNotFoundError) {
-    return <div>NotFoundError</div>
+    return (
+      <main className="m-4">
+        <p>Seems like there is no Microphone or Camera at current device.</p>
+        <p className="mt-2">
+          You can resolve this issue by open current url with your mobile phone.
+        </p>
+      </main>
+    )
   }
 
   if (hasNotAllowedError) {
