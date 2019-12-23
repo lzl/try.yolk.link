@@ -47,7 +47,7 @@ function Canvas({ localStream }) {
     }
   }, [localStream])
 
-  return <canvas ref={canvasRef} className="w-full h-2"></canvas>
+  return <canvas ref={canvasRef} className="block w-full h-2"></canvas>
 }
 
 function Svg({ localStream }) {
