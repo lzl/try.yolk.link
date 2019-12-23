@@ -226,15 +226,16 @@ const GreenRoom = (props: any) => {
   }
 
   return (
-    <div>
+    <main className="flex max-w-lg mx-auto bg-white sm:mt-8">
       <Button
+        className="w-full h-16 text-xl font-bold text-white bg-yellow-500 hover:bg-yellow-700"
         onClick={handleGetStream}
         disabled={isLoadingLocalStream}
         loading={isLoadingLocalStream}
       >
-        getStream
+        Allow to use Microphone and Camera
       </Button>
-    </div>
+    </main>
   )
 }
 

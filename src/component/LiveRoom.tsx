@@ -157,7 +157,7 @@ const LiveRoom = (props: any) => {
       </main>
     )
   } else {
-    return <div>Joined room.</div>
+    return null
   }
 }
 
