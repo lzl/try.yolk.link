@@ -131,18 +131,30 @@ const LiveRoom = (props: any) => {
 
   if (mixedMediaStream) {
     return (
-      <div>
-        <div>
+      <main>
+        <div className="max-w-3xl mx-auto max-h-3/4 sm:mt-8">
           <Video stream={mixedMediaStream} muted={false} />
-          {!isMicMuted && <VolumeMeterCanvas localStream={localStream} />}
+          {isMicMuted ? (
+            <div className="w-full h-2" />
+          ) : (
+            <VolumeMeterCanvas localStream={localStream} />
+          )}
         </div>
-        <div>
-          <Button onClick={handleToggleAudio}>
-            {isMicMuted ? 'unmute' : 'mute'}
+        <div className="flex justify-between max-w-lg px-4 py-4 mx-auto bg-white">
+          <Button
+            className="flex items-center px-2 py-1 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+            onClick={handleToggleAudio}
+          >
+            {isMicMuted ? 'Unmute Mic' : 'Mute Mic'}
           </Button>
-          <Button onClick={() => navigate('/')}>Leave</Button>
+          <Button
+            className="px-2 py-1 ml-2 font-semibold text-red-500 bg-transparent border border-red-500 hover:bg-red-500 hover:border-transparent hover:text-white"
+            onClick={() => navigate('/')}
+          >
+            Leave
+          </Button>
         </div>
-      </div>
+      </main>
     )
   } else {
     return <div>Joined room.</div>

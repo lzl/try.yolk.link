@@ -181,7 +181,7 @@ const GreenRoom = (props: any) => {
                   setToken('')
                 }}
               >
-                Change
+                Change Name
               </Button>
             </div>
           ) : (
