@@ -41,37 +41,50 @@ const Home = (props: RouteComponentProps) => {
     }
   }
 
-  const helmet = (
-    <Helmet>
-      <title>Yolk Link v{packageJson.version}</title>
-    </Helmet>
-  )
+  return (
+    <>
+      <Helmet>
+        <title>Yolk Link v{packageJson.version}</title>
+      </Helmet>
 
-  if (roomId) {
-    return (
-      <>
-        {helmet}
-        <Link to={roomId}>
-          <Button disabled={isLoading} loading={isLoading}>
-            Go to your room
-          </Button>
-        </Link>
-      </>
-    )
-  } else {
-    return (
-      <>
-        {helmet}
-        <Button
-          onClick={handleCreateRoomId}
-          disabled={isLoading}
-          loading={isLoading}
-        >
-          Create a room
-        </Button>
-      </>
-    )
-  }
+      <header className="max-w-lg mx-auto text-center bg-white">
+        <h1 className="pt-8 text-4xl leading-none text-gray-900 sm:mt-8">
+          Give Yolk Link a try
+        </h1>
+        <h2 className="mt-4 text-xl leading-snug text-gray-700">
+          <p>A link connects you with</p>
+          <p>
+            your <span>client</span> face in face
+          </p>
+        </h2>
+      </header>
+
+      <main className="max-w-lg mx-auto bg-white">
+        <div className="flex items-center justify-center p-8">
+          {roomId ? (
+            <Link to={roomId}>
+              <Button
+                disabled={isLoading}
+                loading={isLoading}
+                className="px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+              >
+                Go to your Yolk Link
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              onClick={handleCreateRoomId}
+              disabled={isLoading}
+              loading={isLoading}
+              className="px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+            >
+              One Click to Get Started
+            </Button>
+          )}
+        </div>
+      </main>
+    </>
+  )
 }
 
 export default Home

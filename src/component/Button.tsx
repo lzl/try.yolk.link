@@ -3,7 +3,11 @@ import Loader from './Loader'
 
 const Button = (props: any) => {
   return (
-    <button disabled={props.disabled} onClick={props.onClick}>
+    <button
+      className={props.className}
+      disabled={props.disabled}
+      onClick={props.onClick}
+    >
       {props.children}
       {props.loading && (
         <span style={{ marginLeft: '5px' }}>
