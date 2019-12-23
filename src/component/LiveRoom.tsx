@@ -140,7 +140,7 @@ const LiveRoom = (props: any) => {
             <VolumeMeterCanvas localStream={localStream} />
           )}
         </div>
-        <div className="flex justify-between max-w-lg px-4 py-4 mx-auto bg-white">
+        <div className="flex justify-between max-w-3xl px-4 py-4 mx-auto bg-white">
           <Button
             className="flex items-center px-2 py-1 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
             onClick={handleToggleAudio}

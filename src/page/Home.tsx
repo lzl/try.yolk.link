@@ -48,13 +48,13 @@ const Home = (props: RouteComponentProps) => {
       </Helmet>
 
       <header className="max-w-lg mx-auto text-center bg-white">
-        <h1 className="pt-8 text-4xl leading-none text-gray-900 sm:mt-8">
+        <h1 className="pt-8 text-4xl font-bold leading-none text-gray-900 sm:mt-8">
           Give Yolk Link a try
         </h1>
         <h2 className="mt-4 text-xl leading-snug text-gray-700">
           <p>A link connects you with</p>
           <p>
-            your <span>client</span> face in face
+            your <span>client</span> <em>face-to-face</em>
           </p>
         </h2>
       </header>
@@ -76,9 +76,9 @@ const Home = (props: RouteComponentProps) => {
               onClick={handleCreateRoomId}
               disabled={isLoading}
               loading={isLoading}
-              className="px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+              className="flex items-center px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
             >
-              One Click to Get Started
+              Get Started
             </Button>
           )}
         </div>

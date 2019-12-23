@@ -170,7 +170,7 @@ const GreenRoom = (props: any) => {
             <VolumeMeterCanvas localStream={localStream} />
           </div>
         )}
-        <div className="flex justify-between max-w-lg px-4 py-4 mx-auto bg-white">
+        <div className="flex justify-between max-w-3xl px-4 py-4 mx-auto bg-white">
           {userName ? (
             <div>
               <span className="text-gray-700">{userName}</span>
