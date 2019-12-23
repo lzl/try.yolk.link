@@ -158,7 +158,24 @@ const GreenRoom = (props: any) => {
   }
 
   if (hasNotAllowedError) {
-    return <div>NotAllowedError</div>
+    return (
+      <main className="m-4">
+        <p>
+          Seems like Microphone and Camera are <em>blocked</em> by the browser.
+        </p>
+        <p className="mt-2">
+          You can resolve this issue with the help of{' '}
+          <a
+            className="font-bold text-yellow-500 underline"
+            href="https://www.howtogeek.com/411117/how-to-change-a-sites-camera-and-microphone-permissions-in-chrome/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            this How-To article.
+          </a>
+        </p>
+      </main>
+    )
   }
 
   if (hasPermission) {
