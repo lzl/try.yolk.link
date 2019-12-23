@@ -163,55 +163,65 @@ const GreenRoom = (props: any) => {
 
   if (hasPermission) {
     return (
-      <div>
+      <main>
         {localStream && (
-          <div>
+          <div className="max-w-3xl mx-auto max-h-3/4 sm:mt-8">
             <Video stream={localStream} muted={true} />
             <VolumeMeterCanvas localStream={localStream} />
           </div>
         )}
-        {userName ? (
-          <div>
-            {userName}{' '}
-            <Button
-              onClick={() => {
-                setUserName('')
-                setToken('')
+        <div className="flex justify-between max-w-lg px-4 py-4 mx-auto bg-white">
+          {userName ? (
+            <div>
+              <span className="text-gray-700">{userName}</span>
+              <Button
+                className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
+                onClick={() => {
+                  setUserName('')
+                  setToken('')
+                }}
+              >
+                Change
+              </Button>
+            </div>
+          ) : (
+            <Formik
+              initialValues={{ userName: '' }}
+              onSubmit={(values, { setSubmitting }) => {
+                localStorage.setItem('userName', values.userName)
+                setUserName(values.userName)
               }}
             >
-              Change
-            </Button>
-          </div>
-        ) : (
-          <Formik
-            initialValues={{ userName: '' }}
-            onSubmit={(values, { setSubmitting }) => {
-              localStorage.setItem('userName', values.userName)
-              setUserName(values.userName)
-            }}
+              {({ isSubmitting }) => (
+                <Form>
+                  <Field
+                    className="h-full text-gray-700 border-b border-b-2 appearance-none focus:outline-none"
+                    type="text"
+                    name="userName"
+                    placeholder="Your Name"
+                  />
+                  <Button
+                    className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
+                    type="submit"
+                    disabled={isSubmitting}
+                    loading={isSubmitting}
+                  >
+                    Submit
+                  </Button>
+                </Form>
+              )}
+            </Formik>
+          )}
+          <Button
+            className="flex items-center px-2 py-1 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+            onClick={() => handleJoinRoom(token)}
+            disabled={!token || !userName}
+            loading={isLoadingToken}
           >
-            {({ isSubmitting }) => (
-              <Form>
-                <Field type="text" name="userName" placeholder="Your Name" />
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  loading={isSubmitting}
-                >
-                  Submit
-                </Button>
-              </Form>
-            )}
-          </Formik>
-        )}
-        <Button
-          onClick={() => handleJoinRoom(token)}
-          disabled={!token || !userName}
-          loading={isLoadingToken}
-        >
-          Join Room
-        </Button>
-      </div>
+            Join Room
+          </Button>
+        </div>
+      </main>
     )
   }
 

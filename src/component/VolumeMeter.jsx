@@ -31,7 +31,7 @@ function Canvas({ localStream }) {
         if (meter.checkClipping()) {
           canvasContext.fillStyle = '#ed64a6'
         } else {
-          canvasContext.fillStyle = '#48bb78'
+          canvasContext.fillStyle = '#ecc94b'
         }
         canvasContext.fillRect(0, 0, meter.volume * width * 1.4, height)
 
@@ -47,7 +47,7 @@ function Canvas({ localStream }) {
     }
   }, [localStream])
 
-  return <canvas ref={canvasRef} width="300" height="10"></canvas>
+  return <canvas ref={canvasRef} className="w-full h-2"></canvas>
 }
 
 function Svg({ localStream }) {
