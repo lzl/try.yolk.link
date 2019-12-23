@@ -165,7 +165,7 @@ const GreenRoom = (props: any) => {
     return (
       <main>
         {localStream && (
-          <div className="max-w-3xl mx-auto max-h-3/4 sm:mt-8">
+          <div className="max-w-3xl mx-auto sm:mt-8">
             <Video stream={localStream} muted={true} />
             <VolumeMeterCanvas localStream={localStream} />
           </div>
