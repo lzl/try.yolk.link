@@ -1,38 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react'
 
 interface IVideo {
-  stream: any;
-  muted: boolean;
+  stream: any
+  muted: boolean
 }
 
 function Video({ stream, muted }: IVideo) {
-  let videoElem: any;
+  let videoElem: any
 
   useEffect(() => {
-    if (videoElem) videoElem.srcObject = stream;
+    if (videoElem) videoElem.srcObject = stream
 
     return function cleanup() {
       if (videoElem && videoElem.srcObject) {
-        videoElem.srcObject = null;
+        videoElem.srcObject = null
       }
-    };
-  }, [stream, videoElem]);
+    }
+  }, [stream, videoElem])
 
   useEffect(() => {
     function handleUnload() {
-      let stream = videoElem.srcObject;
-      let tracks = stream.getTracks();
+      let stream = videoElem.srcObject
+      let tracks = stream.getTracks()
 
       tracks.forEach(function(track: any) {
-        track.stop();
-      });
+        track.stop()
+      })
     }
-    window.addEventListener("unload", handleUnload);
+    window.addEventListener('unload', handleUnload)
 
     return function cleanup() {
-      window.removeEventListener("unload", handleUnload);
-    };
-  }, [videoElem]);
+      window.removeEventListener('unload', handleUnload)
+    }
+  }, [videoElem])
 
   return (
     <video
@@ -40,13 +40,13 @@ function Video({ stream, muted }: IVideo) {
       muted={muted}
       playsInline
       ref={el => {
-        videoElem = el;
+        videoElem = el
       }}
-      style={{ display: "block", width: "100%" }}
+      style={{ display: 'block', width: '100%' }}
     >
       this browser does not supported video tag
     </video>
-  );
+  )
 }
 
-export default React.memo(Video);
+export default React.memo(Video)

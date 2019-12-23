@@ -1,73 +1,73 @@
-import React, { useState, useEffect } from "react";
-import { RouteComponentProps } from "@reach/router";
-import nanoid from "nanoid";
-import { useStore } from "../store";
-import GreenRoom from "../component/GreenRoom";
-import LiveRoom from "../component/LiveRoom";
+import React, { useState, useEffect } from 'react'
+import { RouteComponentProps } from '@reach/router'
+import nanoid from 'nanoid'
+import { useStore } from '../store'
+import GreenRoom from '../component/GreenRoom'
+import LiveRoom from '../component/LiveRoom'
 
-let RENDER_COUNTER = 1;
+let RENDER_COUNTER = 1
 
-declare const Owt: any;
-const conference = new Owt.Conference.ConferenceClient();
+declare const Owt: any
+const conference = new Owt.Conference.ConferenceClient()
 
-const DEFAULT_ROOM_ID = "251260606233969163";
+const DEFAULT_ROOM_ID = '251260606233969163'
 
 interface Props
   extends RouteComponentProps<{
-    roomId: string;
+    roomId: string
   }> {}
 
 const Room = (props: Props) => {
-  console.log("Room RENDER_COUNTER:", RENDER_COUNTER++);
-  const { roomId = DEFAULT_ROOM_ID } = props;
+  console.log('Room RENDER_COUNTER:', RENDER_COUNTER++)
+  const { roomId = DEFAULT_ROOM_ID } = props
 
-  const [isJoined, setIsJoined] = useState(false);
+  const [isJoined, setIsJoined] = useState(false)
 
-  const localStream: MediaStream = useStore(state => state.localStream);
+  const localStream: MediaStream = useStore(state => state.localStream)
 
   useEffect(() => {
-    const deviceId = localStorage.getItem("deviceId");
+    const deviceId = localStorage.getItem('deviceId')
     if (!deviceId) {
-      const deviceId = nanoid();
-      localStorage.setItem("deviceId", deviceId);
+      const deviceId = nanoid()
+      localStorage.setItem('deviceId', deviceId)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     return function cleanup() {
       if (isJoined) {
-        if (conference) conference.leave();
+        if (conference) conference.leave()
       }
-    };
-  }, [isJoined]);
+    }
+  }, [isJoined])
 
   useEffect(() => {
     // via https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onunload
     function handleUnload() {
       if (isJoined) {
-        if (conference) conference.leave();
+        if (conference) conference.leave()
       }
     }
-    window.addEventListener("unload", handleUnload);
+    window.addEventListener('unload', handleUnload)
 
     return function cleanup() {
-      window.removeEventListener("unload", handleUnload);
-    };
-  }, [isJoined]);
+      window.removeEventListener('unload', handleUnload)
+    }
+  }, [isJoined])
 
   useEffect(() => {
     return function cleanup() {
       if (localStream) {
-        localStream.getTracks().forEach((track: any) => track.stop());
+        localStream.getTracks().forEach((track: any) => track.stop())
       }
-    };
-  }, [localStream]);
+    }
+  }, [localStream])
 
   useEffect(() => {
     return function cleanup() {
-      RENDER_COUNTER = 0;
-    };
-  }, []);
+      RENDER_COUNTER = 0
+    }
+  }, [])
 
   return isJoined ? (
     <LiveRoom conference={conference} roomId={roomId} />
@@ -77,7 +77,7 @@ const Room = (props: Props) => {
       roomId={roomId}
       setIsJoined={setIsJoined}
     />
-  );
-};
+  )
+}
 
-export default Room;
+export default Room

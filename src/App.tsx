@@ -1,11 +1,11 @@
-import React from "react";
-import { Router } from "@reach/router";
-import Home from "./page/Home";
-import Room from "./page/Room";
-import "./App.css";
-import VConsole from "vconsole";
+import React from 'react'
+import { Router } from '@reach/router'
+import Home from './page/Home'
+import Room from './page/Room'
+import './App.css'
+import VConsole from 'vconsole'
 
-new VConsole();
+new VConsole()
 
 const App: React.FC = () => {
   return (
@@ -13,7 +13,7 @@ const App: React.FC = () => {
       <Home path="/" />
       <Room path="/:roomId" />
     </Router>
-  );
-};
+  )
+}
 
-export default App;
+export default App
