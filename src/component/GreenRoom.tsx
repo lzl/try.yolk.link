@@ -211,6 +211,11 @@ const GreenRoom = (props: any) => {
             <Formik
               initialValues={{ userName: '' }}
               onSubmit={(values, { setSubmitting }) => {
+                if (values.userName.length === 0 || !values.userName.trim()) {
+                  values.userName = ''
+                  setSubmitting(false)
+                  return
+                }
                 localStorage.setItem('userName', values.userName)
                 setUserName(values.userName)
               }}
@@ -224,7 +229,7 @@ const GreenRoom = (props: any) => {
                     placeholder="Your Name"
                   />
                   <Button
-                    className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
+                    className="inline-flex items-center px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
                     type="submit"
                     disabled={isSubmitting}
                     loading={isSubmitting}
