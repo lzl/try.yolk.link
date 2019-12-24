@@ -23,6 +23,7 @@ const LiveRoom = (props: any) => {
   const [mixedMediaStream, setMixedMediaStream] = useState()
   const [publishedStream, setPublishedStream] = useState()
   const [isMicMuted, setMicMuted] = useState(false)
+  const [isStreamMixed, setIsStreamMixed] = useState(false)
 
   const conferenceInfo = useStore(state => state.conferenceInfo)
   const localStream: MediaStream = useStore(state => state.localStream)
@@ -99,6 +100,7 @@ const LiveRoom = (props: any) => {
 
         // mix stream
         await handleMixStreamToRoom(roomId, stream.id)
+        setIsStreamMixed(true)
       } catch (err) {
         const { name, message } = err
         setError(`${name}: ${message}`)
@@ -133,7 +135,13 @@ const LiveRoom = (props: any) => {
     return (
       <main>
         <div className="max-w-3xl mx-auto max-h-3/4 sm:mt-8">
-          <Video stream={mixedMediaStream} muted={false} />
+          <div className="relative">
+            <Video stream={mixedMediaStream} muted={false} />
+            <div
+              className="absolute top-0 left-0 w-full h-full rolling"
+              style={{ opacity: isStreamMixed ? '0' : '0.7' }}
+            ></div>
+          </div>
           {isMicMuted ? (
             <div className="w-full h-2" />
           ) : (
