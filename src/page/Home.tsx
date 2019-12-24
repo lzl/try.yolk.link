@@ -8,6 +8,7 @@ import packageJson from '../../package.json'
 const Home = (props: RouteComponentProps) => {
   const [isLoading, setIsLoading] = useState(true)
   const [roomId, setRoomId] = useState('')
+  const [recentRooms, setRecentRooms] = useState([])
 
   useEffect(() => {
     const roomId = localStorage.getItem('roomId')
@@ -21,6 +22,11 @@ const Home = (props: RouteComponentProps) => {
       const deviceId = nanoid()
       localStorage.setItem('deviceId', deviceId)
     }
+  }, [])
+
+  useEffect(() => {
+    const recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]')
+    if (recentRooms.length > 0) setRecentRooms(recentRooms)
   }, [])
 
   async function handleCreateRoomId() {
@@ -59,8 +65,8 @@ const Home = (props: RouteComponentProps) => {
         </h2>
       </header>
 
-      <main className="max-w-lg mx-auto bg-white">
-        <div className="flex items-center justify-center p-8">
+      <main>
+        <section className="flex items-center justify-center max-w-lg p-8 mx-auto bg-white">
           {roomId ? (
             <Link to={roomId}>
               <Button
@@ -81,7 +87,25 @@ const Home = (props: RouteComponentProps) => {
               Get Started
             </Button>
           )}
-        </div>
+        </section>
+        {recentRooms.length > 0 && (
+          <section className="max-w-lg mx-auto mt-4 bg-white">
+            <h2 className="px-4 py-2 font-bold">Continue with</h2>
+            <ul>
+              {recentRooms.map(({ roomId }: any) => (
+                <li key={roomId} className="border-t border-gray-100">
+                  <Link
+                    to={roomId}
+                    className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-yellow-700 hover:text-white"
+                  >
+                    <div>Who and who</div>
+                    <div>{roomId}</div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </main>
     </>
   )

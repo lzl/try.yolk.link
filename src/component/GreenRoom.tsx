@@ -133,7 +133,6 @@ const GreenRoom = (props: any) => {
     try {
       if (token) {
         const info = await conference.join(token)
-        console.log('1:', info)
         setConferenceInfo(info)
         setIsJoined(true)
       }

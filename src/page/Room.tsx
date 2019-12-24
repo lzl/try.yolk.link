@@ -69,6 +69,15 @@ const Room = (props: Props) => {
     }
   }, [])
 
+  useEffect(() => {
+    let recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]')
+    recentRooms = [
+      { roomId },
+      ...recentRooms.filter((r: { roomId: string }) => r.roomId !== roomId),
+    ]
+    localStorage.setItem('recentRooms', JSON.stringify(recentRooms))
+  }, [roomId])
+
   return isJoined ? (
     <LiveRoom conference={conference} roomId={roomId} />
   ) : (
