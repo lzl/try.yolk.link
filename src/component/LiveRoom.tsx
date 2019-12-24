@@ -29,6 +29,7 @@ const LiveRoom = (props: any) => {
   const [isStreamMixed, setIsStreamMixed] = useState(false)
   const [remoteStreamsLength, setRemoteStreamsLength] = useState(0)
   const [activeStreamNumber, setActiveStreamNumber] = useState(0)
+  const [participants, setParticipants] = useState()
 
   const conferenceInfo = useStore(state => state.conferenceInfo)
   const localStream: MediaStream = useStore(state => state.localStream)
@@ -73,12 +74,37 @@ const LiveRoom = (props: any) => {
     }
   }, [publishedStream, isMicMuted])
 
+  const setParticipantsCallback = useCallback(
+    (participant: any) => {
+      setParticipants([...participants, participant])
+    },
+    [participants]
+  )
+
+  const removeFromParticipationCallback = useCallback(
+    (participant: any) => {
+      setParticipants(removeFromParticipation(participants, participant))
+    },
+    [participants]
+  )
+
   useEffect(() => {
     console.log('LiveRoom START')
 
     async function start() {
       try {
         console.log('Conference info:', conferenceInfo)
+
+        // participants
+        const participants = conferenceInfo.participants
+        setParticipants(participants)
+        console.log('old participants:', participants)
+        for (const participant of participants) {
+          participant.addEventListener('left', () => {
+            console.log('old participant left:', participant)
+            setParticipants(removeFromParticipation(participants, participant))
+          })
+        }
         // sub remote mix stream
         const streams = conferenceInfo.remoteStreams
         let mixedStream
@@ -168,10 +194,21 @@ const LiveRoom = (props: any) => {
       })
     })
 
+    conference.addEventListener('participantjoined', ({ participant }: any) => {
+      console.log('new participant joined:', participant)
+      setParticipantsCallback(participant)
+
+      participant.addEventListener('left', () => {
+        console.log('new participant left:', participant)
+        removeFromParticipationCallback(participant)
+      })
+    })
+
     return function cleanup() {
       conference.clearEventListener('streamadded')
+      conference.clearEventListener('participantjoined')
     }
-  }, [conference])
+  }, [conference, setParticipantsCallback, removeFromParticipationCallback])
 
   if (error) {
     return <div>{error}</div>
@@ -189,6 +226,7 @@ const LiveRoom = (props: any) => {
             <RemoteMixedStreamGrid
               remoteStreamsLength={remoteStreamsLength}
               activeStreamNumber={activeStreamNumber}
+              participants={participants}
             />
             <div
               className="absolute top-0 left-0 w-full h-full rolling"
@@ -225,6 +263,7 @@ const LiveRoom = (props: any) => {
 function RemoteMixedStreamGrid({
   remoteStreamsLength,
   activeStreamNumber,
+  participants,
 }: any) {
   let rowNumber = 0
   let columnNumber = 0
@@ -264,11 +303,9 @@ function RemoteMixedStreamGrid({
                     : 'flex-1 relative border-4 border-transparent'
                 }
               >
-                {isActive && (
-                  <div className="absolute bottom-0 left-0 px-2 py-1 text-sm text-white bg-black opacity-50">
-                    ({i + 1}, {j + 1})
-                  </div>
-                )}
+                <div className="absolute bottom-0 left-0 px-2 py-1 text-sm text-white bg-black opacity-50">
+                  {participants[i + j]?.userId}
+                </div>
               </div>
             )
           })}
@@ -316,6 +353,10 @@ function computeActiveStreamNumber(activeStreamId: string) {
     }
   }
   return activeStreamNumber
+}
+
+function removeFromParticipation(participants: any, participant: any) {
+  return participants.filter((p: any) => p.id !== participant.id)
 }
 
 export default LiveRoom
