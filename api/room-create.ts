@@ -142,7 +142,7 @@ export default async (req: NowRequest, res: NowResponse) => {
                 ],
                 base: 'fluid',
               },
-              fitPolicy: 'letterbox',
+              fitPolicy: 'crop',
             },
             keepActiveInputPrimary: false,
             bgColor: {
