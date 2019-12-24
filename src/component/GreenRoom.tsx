@@ -126,7 +126,7 @@ const GreenRoom = (props: any) => {
   useEffect(() => {
     return function cleanup() {
       RENDER_COUNTER = 0
-      RESOLUTION_RETRY = 0
+      // RESOLUTION_RETRY = 0
     }
   }, [])
 
@@ -307,13 +307,13 @@ async function getStream(): Promise<MediaStream> {
   const videoConstraintsForCamera = new Owt.Base.VideoTrackConstraints(
     Owt.Base.VideoSourceInfo.CAMERA
   )
-  const resolution = getResolution()
-  if (resolution) {
-    videoConstraintsForCamera.resolution = new Owt.Base.Resolution(
-      resolution.width,
-      resolution.height
-    )
-  }
+  // const resolution = getResolution()
+  // if (resolution) {
+  //   videoConstraintsForCamera.resolution = new Owt.Base.Resolution(
+  //     resolution.width,
+  //     resolution.height
+  //   )
+  // }
   // if (audioInputDeviceId) {
   //   audioConstraintsForMic.deviceId = audioInputDeviceId
   // }
@@ -329,15 +329,15 @@ async function getStream(): Promise<MediaStream> {
   )
 }
 
-let RESOLUTION_RETRY = 0
-const resolutions = [
-  { width: 1920, height: 1080 },
-  { width: 1280, height: 720 },
-]
-function getResolution() {
-  console.log('RESOLUTION_RETRY:', RESOLUTION_RETRY)
-  if (RESOLUTION_RETRY >= resolutions.length) return false
-  return resolutions[RESOLUTION_RETRY++]
-}
+// let RESOLUTION_RETRY = 0
+// const resolutions = [
+//   { width: 1920, height: 1080 },
+//   { width: 1280, height: 720 },
+// ]
+// function getResolution() {
+//   console.log('RESOLUTION_RETRY:', RESOLUTION_RETRY)
+//   if (RESOLUTION_RETRY >= resolutions.length) return false
+//   return resolutions[RESOLUTION_RETRY++]
+// }
 
 export default GreenRoom
