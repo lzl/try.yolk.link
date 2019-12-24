@@ -4,6 +4,7 @@ import { useStore } from '../store'
 import Video from './Video'
 import { VolumeMeterCanvas } from './VolumeMeter'
 import Button from './Button'
+import CopyUrl from './CopyUrl'
 import { useLogRoomVisited } from '../hook/useLog'
 
 declare const Owt: any
@@ -187,8 +188,11 @@ const GreenRoom = (props: any) => {
   if (hasPermission) {
     return (
       <main>
+        <div className="sm:mt-8">
+          <CopyUrl />
+        </div>
         {localStream && (
-          <div className="max-w-3xl mx-auto sm:mt-8">
+          <div className="max-w-3xl mx-auto">
             <Video stream={localStream} muted={true} />
             <VolumeMeterCanvas localStream={localStream} />
           </div>
@@ -229,7 +233,7 @@ const GreenRoom = (props: any) => {
                     placeholder="Your Name"
                   />
                   <Button
-                    className="inline-flex items-center px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
+                    className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
                     type="submit"
                     disabled={isSubmitting}
                     loading={isSubmitting}
@@ -241,7 +245,7 @@ const GreenRoom = (props: any) => {
             </Formik>
           )}
           <Button
-            className="flex items-center px-2 py-1 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+            className="px-2 py-1 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
             onClick={() => handleJoinRoom(token)}
             disabled={!token || !userName}
             loading={isLoadingToken}

@@ -82,7 +82,7 @@ const Home = (props: RouteComponentProps) => {
               onClick={handleCreateRoomId}
               disabled={isLoading}
               loading={isLoading}
-              className="flex items-center px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+              className="px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
             >
               Get Started
             </Button>

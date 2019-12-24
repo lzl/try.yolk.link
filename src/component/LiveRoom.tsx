@@ -4,6 +4,7 @@ import { useStore } from '../store'
 import Video from './Video'
 import { VolumeMeterCanvas } from './VolumeMeter'
 import Button from './Button'
+import CopyUrl from './CopyUrl'
 import {
   useLogRoomJoined,
   useLogRoomDuration,
@@ -134,7 +135,10 @@ const LiveRoom = (props: any) => {
   if (mixedMediaStream) {
     return (
       <main>
-        <div className="max-w-3xl mx-auto max-h-3/4 sm:mt-8">
+        <div className="sm:mt-8">
+          <CopyUrl />
+        </div>
+        <div className="max-w-3xl mx-auto max-h-3/4">
           <div className="relative">
             <Video stream={mixedMediaStream} muted={false} />
             <div
@@ -150,7 +154,7 @@ const LiveRoom = (props: any) => {
         </div>
         <div className="flex justify-between max-w-3xl px-4 py-4 mx-auto bg-white">
           <Button
-            className="flex items-center px-2 py-1 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+            className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
             onClick={handleToggleAudio}
           >
             {isMicMuted ? 'Unmute Mic' : 'Mute Mic'}
