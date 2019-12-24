@@ -15,6 +15,8 @@ declare const Owt: any
 
 let RENDER_COUNTER = 1
 const DEFAULT_ROOM_ID = '251260606233969163'
+let REMOTE_STREAMS: any = []
+let ACTIVE_STREAM_ID: any
 
 const LiveRoom = (props: any) => {
   console.log('LiveRoom RENDER_COUNTER:', RENDER_COUNTER++)
@@ -25,6 +27,8 @@ const LiveRoom = (props: any) => {
   const [publishedStream, setPublishedStream] = useState()
   const [isMicMuted, setMicMuted] = useState(false)
   const [isStreamMixed, setIsStreamMixed] = useState(false)
+  const [remoteStreamsLength, setRemoteStreamsLength] = useState(0)
+  const [activeStreamNumber, setActiveStreamNumber] = useState(0)
 
   const conferenceInfo = useStore(state => state.conferenceInfo)
   const localStream: MediaStream = useStore(state => state.localStream)
@@ -44,6 +48,12 @@ const LiveRoom = (props: any) => {
         subscription.addEventListener('error', (err: any) => {
           console.log('Subscription error: ' + err.error.message)
         })
+        stream.addEventListener(
+          'activeaudioinputchange',
+          ({ activeAudioInputStreamId }: any) => {
+            setActiveStreamId(activeAudioInputStreamId, setActiveStreamNumber)
+          }
+        )
         return stream.mediaStream
       } catch (err) {
         console.log('handleSubscribe error:', err)
@@ -79,6 +89,20 @@ const LiveRoom = (props: any) => {
           ) {
             mixedStream = stream
             console.log('MixedStream:', mixedStream)
+          } else {
+            stream.addEventListener('ended', () => {
+              console.log('streamended:', stream)
+              removeFromRemoteStreams(
+                stream,
+                setRemoteStreamsLength,
+                setActiveStreamNumber
+              )
+            })
+            addToRemoteStreams(
+              stream,
+              setRemoteStreamsLength,
+              setActiveStreamNumber
+            )
           }
         }
         const mixStream = await handleSubscribeStream(mixedStream)
@@ -125,8 +149,29 @@ const LiveRoom = (props: any) => {
   useEffect(() => {
     return function cleanup() {
       RENDER_COUNTER = 0
+      REMOTE_STREAMS = []
     }
   }, [])
+
+  useEffect(() => {
+    conference.addEventListener('streamadded', ({ stream }: any) => {
+      console.log('streamadded:', stream)
+      addToRemoteStreams(stream, setRemoteStreamsLength, setActiveStreamNumber)
+
+      stream.addEventListener('ended', () => {
+        console.log('streamended:', stream)
+        removeFromRemoteStreams(
+          stream,
+          setRemoteStreamsLength,
+          setActiveStreamNumber
+        )
+      })
+    })
+
+    return function cleanup() {
+      conference.clearEventListener('streamadded')
+    }
+  }, [conference])
 
   if (error) {
     return <div>{error}</div>
@@ -141,6 +186,10 @@ const LiveRoom = (props: any) => {
         <div className="max-w-3xl mx-auto max-h-3/4">
           <div className="relative">
             <Video stream={mixedMediaStream} muted={false} />
+            <RemoteMixedStreamGrid
+              remoteStreamsLength={remoteStreamsLength}
+              activeStreamNumber={activeStreamNumber}
+            />
             <div
               className="absolute top-0 left-0 w-full h-full rolling"
               style={{ opacity: isStreamMixed ? '0' : '0.7' }}
@@ -171,6 +220,102 @@ const LiveRoom = (props: any) => {
   } else {
     return null
   }
+}
+
+function RemoteMixedStreamGrid({
+  remoteStreamsLength,
+  activeStreamNumber,
+}: any) {
+  let rowNumber = 0
+  let columnNumber = 0
+  let active: any = []
+  if (remoteStreamsLength === 0 || activeStreamNumber === 0) {
+    return null
+  } else if (remoteStreamsLength === 1 || remoteStreamsLength === 2) {
+    rowNumber = 1
+    columnNumber = remoteStreamsLength
+    active = [1, activeStreamNumber]
+  } else if (remoteStreamsLength === 3 || remoteStreamsLength === 4) {
+    rowNumber = 2
+    columnNumber = 2
+    if (activeStreamNumber === 1 || activeStreamNumber === 2) {
+      active = [1, activeStreamNumber]
+    } else {
+      active = [2, activeStreamNumber - 2]
+    }
+  } else {
+    return null
+  }
+  const row = [...new Array(rowNumber)]
+  const column = [...new Array(columnNumber)]
+
+  return (
+    <div className="absolute top-0 left-0 flex flex-col w-full h-full">
+      {row.map((_, i) => (
+        <div key={i} className="flex flex-1">
+          {column.map((_, j) => {
+            const isActive = i + 1 === active[0] && j + 1 === active[1]
+            return (
+              <div
+                key={j}
+                className={
+                  isActive
+                    ? 'flex-1 relative border-4 border-yellow-500'
+                    : 'flex-1 relative border-4 border-transparent'
+                }
+              >
+                {isActive && (
+                  <div className="absolute bottom-0 left-0 px-2 py-1 text-sm text-white bg-black opacity-50">
+                    ({i + 1}, {j + 1})
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function addToRemoteStreams(
+  stream: any,
+  setRemoteStreamsLength: any,
+  setActiveStreamNumber: any
+) {
+  REMOTE_STREAMS = REMOTE_STREAMS.filter((s: any) => s.id !== stream.id)
+  REMOTE_STREAMS = [...REMOTE_STREAMS, stream]
+  console.log('REMOTE_STREAMS:', REMOTE_STREAMS)
+  setRemoteStreamsLength(REMOTE_STREAMS.length)
+  setActiveStreamId(ACTIVE_STREAM_ID, setActiveStreamNumber)
+}
+
+function removeFromRemoteStreams(
+  stream: any,
+  setRemoteStreamsLength: any,
+  setActiveStreamNumber: any
+) {
+  REMOTE_STREAMS = REMOTE_STREAMS.filter((s: any) => s.origin !== stream.origin)
+  console.log('REMOTE_STREAMS:', REMOTE_STREAMS)
+  setRemoteStreamsLength(REMOTE_STREAMS.length)
+  setActiveStreamId(ACTIVE_STREAM_ID, setActiveStreamNumber)
+}
+
+function setActiveStreamId(id: string, setActiveStreamNumber: any) {
+  ACTIVE_STREAM_ID = id
+  console.log('ACTIVE_STREAM_ID:', ACTIVE_STREAM_ID)
+  const activeStreamNumber = computeActiveStreamNumber(id)
+  setActiveStreamNumber(activeStreamNumber)
+}
+
+function computeActiveStreamNumber(activeStreamId: string) {
+  let activeStreamNumber = 0
+  for (let i = 0; i < REMOTE_STREAMS.length; i++) {
+    if (REMOTE_STREAMS[i].id === activeStreamId) {
+      activeStreamNumber = i + 1
+    }
+  }
+  return activeStreamNumber
 }
 
 export default LiveRoom
