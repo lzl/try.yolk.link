@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, RouteComponentProps } from '@reach/router'
-import { Helmet } from 'react-helmet'
 import nanoid from 'nanoid'
 import Button from '../component/Button'
-import packageJson from '../../package.json'
 
 const Home = (props: RouteComponentProps) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -49,10 +47,6 @@ const Home = (props: RouteComponentProps) => {
 
   return (
     <>
-      <Helmet>
-        <title>Yolk Link v{packageJson.version}</title>
-      </Helmet>
-
       <header className="max-w-lg mx-auto text-center bg-white">
         <h1 className="pt-8 text-4xl font-bold leading-none text-gray-900 sm:mt-8">
           Give Yolk Link a try
