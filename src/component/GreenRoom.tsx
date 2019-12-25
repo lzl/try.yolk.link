@@ -197,7 +197,7 @@ const GreenRoom = (props: any) => {
             <VolumeMeterCanvas localStream={localStream} />
           </div>
         )}
-        <div className="flex justify-between max-w-3xl px-4 py-4 mx-auto bg-white">
+        <div className="flex flex-col justify-between max-w-3xl px-4 py-4 mx-auto bg-white sm:flex-row">
           {userName ? (
             <div>
               <span className="text-gray-700">{userName}</span>
@@ -245,12 +245,12 @@ const GreenRoom = (props: any) => {
             </Formik>
           )}
           <Button
-            className="px-2 py-1 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+            className="px-2 py-2 mt-2 font-bold text-white bg-yellow-500 sm:mt-0 sm:py-1 hover:bg-yellow-700"
             onClick={() => handleJoinRoom(token)}
             disabled={!token || !userName}
             loading={isLoadingToken}
           >
-            Join Room
+            Join Meeting
           </Button>
         </div>
       </main>
