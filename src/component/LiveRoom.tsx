@@ -15,8 +15,6 @@ declare const Owt: any
 
 let RENDER_COUNTER = 1
 const DEFAULT_ROOM_ID = '251260606233969163'
-let REMOTE_STREAMS: any = []
-let ACTIVE_STREAM_ID: any
 
 const LiveRoom = (props: any) => {
   console.log('LiveRoom RENDER_COUNTER:', RENDER_COUNTER++)
@@ -27,9 +25,10 @@ const LiveRoom = (props: any) => {
   const [publishedStream, setPublishedStream] = useState()
   const [isMicMuted, setMicMuted] = useState(false)
   const [isStreamMixed, setIsStreamMixed] = useState(false)
-  const [remoteStreamsLength, setRemoteStreamsLength] = useState(0)
+  const [remoteStreams, setRemoteStreams] = useState<any[]>([])
+  const [activeStreamId, setActiveStreamId] = useState('')
   const [activeStreamNumber, setActiveStreamNumber] = useState(0)
-  const [participants, setParticipants] = useState()
+  const [, setParticipants] = useState()
 
   const conferenceInfo = useStore(state => state.conferenceInfo)
   const localStream: MediaStream = useStore(state => state.localStream)
@@ -51,9 +50,8 @@ const LiveRoom = (props: any) => {
         })
         stream.addEventListener(
           'activeaudioinputchange',
-          ({ activeAudioInputStreamId }: any) => {
-            setActiveStreamId(activeAudioInputStreamId, setActiveStreamNumber)
-          }
+          ({ activeAudioInputStreamId }: any) =>
+            setActiveStreamId(activeAudioInputStreamId)
         )
         return stream.mediaStream
       } catch (err) {
@@ -67,26 +65,12 @@ const LiveRoom = (props: any) => {
 
   const handleToggleAudio = useCallback(async () => {
     if (publishedStream) {
-      isMicMuted
-        ? await publishedStream.unmute('audio')
-        : await publishedStream.mute('audio')
-      setMicMuted(!isMicMuted)
+      setMicMuted((state: boolean) => {
+        state ? publishedStream.unmute('audio') : publishedStream.mute('audio')
+        return !state
+      })
     }
-  }, [publishedStream, isMicMuted])
-
-  const setParticipantsCallback = useCallback(
-    (participant: any) => {
-      setParticipants([...participants, participant])
-    },
-    [participants]
-  )
-
-  const removeFromParticipationCallback = useCallback(
-    (participant: any) => {
-      setParticipants(removeFromParticipation(participants, participant))
-    },
-    [participants]
-  )
+  }, [publishedStream])
 
   useEffect(() => {
     console.log('LiveRoom START')
@@ -97,12 +81,14 @@ const LiveRoom = (props: any) => {
 
         // participants
         const participants = conferenceInfo.participants
-        setParticipants(participants)
         console.log('old participants:', participants)
+        setParticipants(participants)
         for (const participant of participants) {
           participant.addEventListener('left', () => {
             console.log('old participant left:', participant)
-            setParticipants(removeFromParticipation(participants, participant))
+            setParticipants((ps: any) =>
+              ps.filter((p: any) => p.id !== participant.id)
+            )
           })
         }
         // sub remote mix stream
@@ -118,17 +104,21 @@ const LiveRoom = (props: any) => {
           } else {
             stream.addEventListener('ended', () => {
               console.log('streamended:', stream)
-              removeFromRemoteStreams(
-                stream,
-                setRemoteStreamsLength,
-                setActiveStreamNumber
-              )
+              setRemoteStreams((rs: any) => {
+                const remoteStreams = rs.filter(
+                  (s: any) => s.origin !== stream.origin
+                )
+                return remoteStreams
+              })
             })
-            addToRemoteStreams(
-              stream,
-              setRemoteStreamsLength,
-              setActiveStreamNumber
-            )
+            console.log('old remote stream:', stream)
+            setRemoteStreams((rs: any) => {
+              const remoteStreams = [
+                ...rs.filter((s: any) => s.id !== stream.id),
+                stream,
+              ]
+              return remoteStreams
+            })
           }
         }
         const mixStream = await handleSubscribeStream(mixedStream)
@@ -137,7 +127,8 @@ const LiveRoom = (props: any) => {
         // pub local stream
         const toPublishStream = new Owt.Base.LocalStream(
           localStream,
-          new Owt.Base.StreamSourceInfo('mic', 'camera')
+          new Owt.Base.StreamSourceInfo('mic', 'camera'),
+          { userName: localStorage.getItem('userName') }
         )
         const stream = await conference.publish(toPublishStream, {
           audio: [{ codec: { name: 'opus' }, maxBitrate: 300 }],
@@ -154,7 +145,7 @@ const LiveRoom = (props: any) => {
         setIsStreamMixed(true)
 
         if (conferenceInfo.activeInput) {
-          setActiveStreamId(conferenceInfo.activeInput, setActiveStreamNumber)
+          setActiveStreamId(conferenceInfo.activeInput)
         }
       } catch (err) {
         const { name, message } = err
@@ -179,32 +170,38 @@ const LiveRoom = (props: any) => {
   useEffect(() => {
     return function cleanup() {
       RENDER_COUNTER = 0
-      REMOTE_STREAMS = []
     }
   }, [])
 
   useEffect(() => {
     conference.addEventListener('streamadded', ({ stream }: any) => {
       console.log('streamadded:', stream)
-      addToRemoteStreams(stream, setRemoteStreamsLength, setActiveStreamNumber)
+      setRemoteStreams((rs: any) => {
+        let remoteStreams = rs.filter((s: any) => s.id !== stream.id)
+        remoteStreams = [...remoteStreams, stream]
+        return remoteStreams
+      })
 
       stream.addEventListener('ended', () => {
         console.log('streamended:', stream)
-        removeFromRemoteStreams(
-          stream,
-          setRemoteStreamsLength,
-          setActiveStreamNumber
-        )
+        setRemoteStreams((rs: any) => {
+          const remoteStreams = rs.filter(
+            (s: any) => s.origin !== stream.origin
+          )
+          return remoteStreams
+        })
       })
     })
 
     conference.addEventListener('participantjoined', ({ participant }: any) => {
       console.log('new participant joined:', participant)
-      setParticipantsCallback(participant)
+      setParticipants((ps: any) => [...ps, participant])
 
       participant.addEventListener('left', () => {
         console.log('new participant left:', participant)
-        removeFromParticipationCallback(participant)
+        setParticipants((ps: any) =>
+          ps.filter((p: any) => p.id !== participant.id)
+        )
       })
     })
 
@@ -212,7 +209,15 @@ const LiveRoom = (props: any) => {
       conference.clearEventListener('streamadded')
       conference.clearEventListener('participantjoined')
     }
-  }, [conference, setParticipantsCallback, removeFromParticipationCallback])
+  }, [conference])
+
+  useEffect(() => {
+    const activeStreamNumber = computeActiveStreamNumber(
+      activeStreamId,
+      remoteStreams
+    )
+    setActiveStreamNumber(activeStreamNumber)
+  }, [activeStreamId, remoteStreams])
 
   if (error) {
     return <div>{error}</div>
@@ -228,9 +233,9 @@ const LiveRoom = (props: any) => {
           <div className="relative">
             <Video stream={mixedMediaStream} muted={false} />
             <RemoteMixedStreamGrid
-              remoteStreamsLength={remoteStreamsLength}
+              remoteStreamsLength={remoteStreams.length}
               activeStreamNumber={activeStreamNumber}
-              participants={participants}
+              remoteStreams={remoteStreams}
             />
             <div
               className="absolute top-0 left-0 w-full h-full rolling"
@@ -267,7 +272,7 @@ const LiveRoom = (props: any) => {
 function RemoteMixedStreamGrid({
   remoteStreamsLength,
   activeStreamNumber,
-  participants,
+  remoteStreams,
 }: any) {
   let rowNumber = 0
   let columnNumber = 0
@@ -292,7 +297,7 @@ function RemoteMixedStreamGrid({
   const row = [...new Array(rowNumber)]
   const column = [...new Array(columnNumber)]
 
-  console.log('current participants:', participants)
+  console.log('current remote streams:', remoteStreams)
 
   return (
     <div className="absolute top-0 left-0 flex flex-col w-full h-full">
@@ -310,7 +315,7 @@ function RemoteMixedStreamGrid({
                 }
               >
                 <div className="absolute bottom-0 left-0 px-2 py-1 text-sm text-white bg-black opacity-50">
-                  {participants[2 * i + j]?.userId}
+                  {remoteStreams[2 * i + j]?.attributes?.userName}
                 </div>
               </div>
             )
@@ -321,48 +326,14 @@ function RemoteMixedStreamGrid({
   )
 }
 
-function addToRemoteStreams(
-  stream: any,
-  setRemoteStreamsLength: any,
-  setActiveStreamNumber: any
-) {
-  REMOTE_STREAMS = REMOTE_STREAMS.filter((s: any) => s.id !== stream.id)
-  REMOTE_STREAMS = [...REMOTE_STREAMS, stream]
-  console.log('REMOTE_STREAMS:', REMOTE_STREAMS)
-  setRemoteStreamsLength(REMOTE_STREAMS.length)
-  setActiveStreamId(ACTIVE_STREAM_ID, setActiveStreamNumber)
-}
-
-function removeFromRemoteStreams(
-  stream: any,
-  setRemoteStreamsLength: any,
-  setActiveStreamNumber: any
-) {
-  REMOTE_STREAMS = REMOTE_STREAMS.filter((s: any) => s.origin !== stream.origin)
-  console.log('REMOTE_STREAMS:', REMOTE_STREAMS)
-  setRemoteStreamsLength(REMOTE_STREAMS.length)
-  setActiveStreamId(ACTIVE_STREAM_ID, setActiveStreamNumber)
-}
-
-function setActiveStreamId(id: string, setActiveStreamNumber: any) {
-  ACTIVE_STREAM_ID = id
-  console.log('ACTIVE_STREAM_ID:', ACTIVE_STREAM_ID)
-  const activeStreamNumber = computeActiveStreamNumber(id)
-  setActiveStreamNumber(activeStreamNumber)
-}
-
-function computeActiveStreamNumber(activeStreamId: string) {
+function computeActiveStreamNumber(activeStreamId: string, remoteStreams: any) {
   let activeStreamNumber = 0
-  for (let i = 0; i < REMOTE_STREAMS.length; i++) {
-    if (REMOTE_STREAMS[i].id === activeStreamId) {
+  for (let i = 0; i < remoteStreams.length; i++) {
+    if (remoteStreams[i].id === activeStreamId) {
       activeStreamNumber = i + 1
     }
   }
   return activeStreamNumber
-}
-
-function removeFromParticipation(participants: any, participant: any) {
-  return participants.filter((p: any) => p.id !== participant.id)
 }
 
 export default LiveRoom
