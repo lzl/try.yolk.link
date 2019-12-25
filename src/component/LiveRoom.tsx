@@ -152,6 +152,10 @@ const LiveRoom = (props: any) => {
         // mix stream
         await handleMixStreamToRoom(roomId, stream.id)
         setIsStreamMixed(true)
+
+        if (conferenceInfo.activeInput) {
+          setActiveStreamId(conferenceInfo.activeInput, setActiveStreamNumber)
+        }
       } catch (err) {
         const { name, message } = err
         setError(`${name}: ${message}`)
