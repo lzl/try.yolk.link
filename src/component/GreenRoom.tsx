@@ -202,7 +202,7 @@ const GreenRoom = (props: any) => {
             <div>
               <span className="text-gray-700">{userName}</span>
               <Button
-                className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
+                className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-700 hover:text-white hover:border-transparent"
                 onClick={() => {
                   setUserName('')
                   setToken('')
@@ -233,7 +233,7 @@ const GreenRoom = (props: any) => {
                     placeholder="Your Name"
                   />
                   <Button
-                    className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
+                    className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-700 hover:text-white hover:border-transparent"
                     type="submit"
                     disabled={isSubmitting}
                     loading={isSubmitting}

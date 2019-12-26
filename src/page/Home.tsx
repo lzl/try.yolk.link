@@ -95,9 +95,9 @@ const Home = (props: RouteComponentProps) => {
                     {presenters.length !== 0 ? (
                       <div>{presenters.join(', ')}</div>
                     ) : (
-                      <div className="text-gray-500">Just yourself</div>
+                      <div>Just yourself</div>
                     )}
-                    <div className="ml-2 text-gray-500">{roomId}</div>
+                    <div className="ml-2">{roomId}</div>
                   </Link>
                 </li>
               ))}

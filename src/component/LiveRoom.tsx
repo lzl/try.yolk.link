@@ -289,13 +289,13 @@ const LiveRoom = (props: any) => {
         </div>
         <div className="flex justify-between max-w-3xl px-4 py-4 mx-auto bg-white">
           <Button
-            className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-500 hover:text-white hover:border-transparent"
+            className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-700 hover:text-white hover:border-transparent"
             onClick={handleToggleAudio}
           >
             {isMicMuted ? 'Unmute Mic' : 'Mute Mic'}
           </Button>
           <Button
-            className="px-2 py-1 ml-2 font-semibold text-red-500 bg-transparent border border-red-500 hover:bg-red-500 hover:border-transparent hover:text-white"
+            className="px-2 py-1 ml-2 font-semibold text-red-500 bg-transparent border border-red-500 hover:bg-red-700 hover:border-transparent hover:text-white"
             onClick={() => navigate('/')}
           >
             Leave
