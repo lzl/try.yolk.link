@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { Link, RouteComponentProps } from '@reach/router'
 import nanoid from 'nanoid'
 import Button from '../component/Button'
+import Confetti from '../component/Confetti'
 
 const Home = (props: RouteComponentProps) => {
   const [isLoading, setIsLoading] = useState(true)
   const [roomId, setRoomId] = useState('')
   const [recentRooms, setRecentRooms] = useState([])
+  const [canConfetti, setCanConfetti] = useState(false)
 
   useEffect(() => {
     const roomId = localStorage.getItem('roomId')
@@ -37,8 +39,8 @@ const Home = (props: RouteComponentProps) => {
       const roomId: string = data.roomId
       console.log('Got a roomId:', roomId)
       localStorage.setItem('roomId', roomId)
-      // navigate(`/${roomId}`);
       setRoomId(roomId)
+      setCanConfetti(true)
       setIsLoading(false)
     } catch (err) {
       console.log(err)
@@ -66,8 +68,9 @@ const Home = (props: RouteComponentProps) => {
               <Button
                 disabled={isLoading}
                 loading={isLoading}
-                className="px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+                className="relative px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
               >
+                <Confetti active={canConfetti} />
                 Go to your Yolk Link
               </Button>
             </Link>
