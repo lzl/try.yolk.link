@@ -86,13 +86,17 @@ const Home = (props: RouteComponentProps) => {
           <section className="max-w-lg mx-auto mt-4 bg-white">
             <h2 className="px-4 py-2 font-bold">Continue with</h2>
             <ul>
-              {recentRooms.map(({ roomId }: any) => (
+              {recentRooms.map(({ roomId, presenters = [] }: any) => (
                 <li key={roomId} className="border-t border-gray-100">
                   <Link
                     to={roomId}
                     className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-yellow-700 hover:text-white"
                   >
-                    <div>Who and who</div>
+                    {presenters.length !== 0 ? (
+                      <div>{presenters.join(', ')}</div>
+                    ) : (
+                      <div className="text-gray-500">Just yourself</div>
+                    )}
                     <div>{roomId}</div>
                   </Link>
                 </li>

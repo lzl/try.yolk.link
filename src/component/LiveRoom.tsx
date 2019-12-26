@@ -219,6 +219,45 @@ const LiveRoom = (props: any) => {
     setActiveStreamNumber(activeStreamNumber)
   }, [activeStreamId, remoteStreams])
 
+  useEffect(() => {
+    const selfName = localStorage.getItem('userName') || ''
+    const presenters: string[] = remoteStreams
+      .map((rs: any) => rs?.attributes?.userName)
+      .filter((n: string) => n !== selfName)
+    const recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]')
+    const oldPresenters: string[] =
+      recentRooms.find((r: any) => r.roomId === roomId)?.presenters || []
+
+    if (presenters.length !== 0) {
+      let finalPresenters: string[]
+      const intersection = oldPresenters.filter((p: string) =>
+        presenters.includes(p)
+      )
+      if (intersection.length === 0) {
+        finalPresenters = presenters
+      } else {
+        let filtedOldPresenters = oldPresenters
+        presenters.forEach((p: string) => {
+          filtedOldPresenters = filtedOldPresenters.filter(
+            (op: string) => op !== p
+          )
+        })
+        const newPresenters = [...filtedOldPresenters, ...presenters]
+        const lastFourPresenters = newPresenters.slice(
+          Math.max(newPresenters.length - 4, 0)
+        )
+        finalPresenters = lastFourPresenters
+      }
+      const newRecentRooms = recentRooms.map((r: any) => {
+        if (r.roomId === roomId) {
+          r.presenters = finalPresenters
+        }
+        return r
+      })
+      localStorage.setItem('recentRooms', JSON.stringify(newRecentRooms))
+    }
+  }, [remoteStreams, roomId])
+
   if (error) {
     return <div>{error}</div>
   }

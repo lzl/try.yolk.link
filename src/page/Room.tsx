@@ -70,12 +70,13 @@ const Room = (props: Props) => {
   }, [])
 
   useEffect(() => {
-    let recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]')
-    recentRooms = [
-      { roomId },
-      ...recentRooms.filter((r: { roomId: string }) => r.roomId !== roomId),
-    ]
-    localStorage.setItem('recentRooms', JSON.stringify(recentRooms))
+    const recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]')
+    const currentRoom = recentRooms.find((r: any) => r.roomId === roomId)
+    const otherRooms = recentRooms.filter((r: any) => r.roomId !== roomId)
+    const newRecentRooms = currentRoom
+      ? [currentRoom, ...otherRooms]
+      : [{ roomId }, ...otherRooms]
+    localStorage.setItem('recentRooms', JSON.stringify(newRecentRooms))
   }, [roomId])
 
   return isJoined ? (
