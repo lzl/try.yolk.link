@@ -89,40 +89,6 @@ export default async (req: NowRequest, res: NowResponse) => {
                         area: {
                           left: '0',
                           top: '1/2',
-                          width: '1',
-                          height: '1/2',
-                        },
-                      },
-                    ],
-                  },
-                  {
-                    region: [
-                      {
-                        id: '1',
-                        shape: 'rectangle',
-                        area: {
-                          left: '0',
-                          top: '0',
-                          width: '1/2',
-                          height: '1/2',
-                        },
-                      },
-                      {
-                        id: '2',
-                        shape: 'rectangle',
-                        area: {
-                          left: '1/2',
-                          top: '0',
-                          width: '1/2',
-                          height: '1/2',
-                        },
-                      },
-                      {
-                        id: '3',
-                        shape: 'rectangle',
-                        area: {
-                          left: '0',
-                          top: '1/2',
                           width: '1/2',
                           height: '1/2',
                         },
