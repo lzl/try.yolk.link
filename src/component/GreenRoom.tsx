@@ -245,7 +245,7 @@ const GreenRoom = (props: any) => {
             </Formik>
           )}
           <Button
-            className="px-2 py-2 mt-2 font-bold text-white bg-yellow-500 sm:mt-0 sm:py-1 hover:bg-yellow-700"
+            className="px-2 py-2 mt-4 font-bold text-white bg-yellow-500 sm:mt-0 sm:py-1 hover:bg-yellow-700"
             onClick={() => handleJoinRoom(token)}
             disabled={!token || !userName}
             loading={isLoadingToken}
