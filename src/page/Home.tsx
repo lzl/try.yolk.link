@@ -54,7 +54,7 @@ const Home = (props: RouteComponentProps) => {
         <h2 className="mt-4 text-xl leading-snug text-gray-700">
           <p>A link connects you with</p>
           <p>
-            your <span>client</span> <em>face-to-face</em>
+            your <span>clients</span> <em>face-to-face</em>
           </p>
         </h2>
       </header>
@@ -97,7 +97,7 @@ const Home = (props: RouteComponentProps) => {
                     ) : (
                       <div className="text-gray-500">Just yourself</div>
                     )}
-                    <div>{roomId}</div>
+                    <div className="ml-2 text-gray-500">{roomId}</div>
                   </Link>
                 </li>
               ))}

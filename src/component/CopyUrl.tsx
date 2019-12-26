@@ -17,7 +17,7 @@ const CopyUrl = () => {
           type="url"
           value={window.location.href}
           readOnly
-          className="w-full text-xs text-right text-gray-500"
+          className="w-full text-sm leading-none text-right text-gray-500"
           onFocus={e => {
             e.target.select()
             e.target.setSelectionRange(0, e.target.value.length)
