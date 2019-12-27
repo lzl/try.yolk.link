@@ -87,7 +87,7 @@ const Home = (props: RouteComponentProps) => {
         </section>
         {recentRooms.length > 0 && (
           <section className="max-w-lg mx-auto mt-4 bg-white">
-            <h2 className="px-4 py-2 font-bold">Continue with</h2>
+            <h2 className="p-4 font-bold">Continue with</h2>
             <ul>
               {recentRooms.map(({ roomId, presenters = [] }: any) => (
                 <li key={roomId} className="border-t border-gray-100">
@@ -107,6 +107,41 @@ const Home = (props: RouteComponentProps) => {
             </ul>
           </section>
         )}
+        <section className="max-w-lg mx-auto mt-4 bg-white">
+          <h2 className="px-4 pt-4 font-bold">Keep In Touch with Yolk Link</h2>
+          <p className="px-4 pb-4 mt-1 text-xs leading-tight text-gray-500">
+            We send a newsletter every 4-8 weeks, and only when we have
+            something important to say. You can unsubscribe at any time.
+          </p>
+          <div className="p-4 border-t border-gray-100">
+            <form
+              action="https://link.us4.list-manage.com/subscribe/post?u=835d1734463030dbb86a006b9&amp;id=e7ab6e45d6"
+              method="post"
+              target="_blank"
+              className="flex"
+            >
+              <input
+                type="email"
+                name="EMAIL"
+                placeholder="youremail@domain.com"
+                className="flex-1 text-gray-700 border-b border-b-2 appearance-none focus:outline-none"
+              />
+              <div className="hidden" aria-hidden="true">
+                <input
+                  type="text"
+                  name="b_835d1734463030dbb86a006b9_e7ab6e45d6"
+                  tabIndex={-1}
+                />
+              </div>
+              <Button
+                type="submit"
+                className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-700 hover:text-white hover:border-transparent"
+              >
+                Subscribe
+              </Button>
+            </form>
+          </div>
+        </section>
       </main>
     </>
   )
