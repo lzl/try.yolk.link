@@ -107,7 +107,7 @@ const Home = (props: RouteComponentProps) => {
             </ul>
           </section>
         )}
-        <section className="relative max-w-lg mx-auto my-16 bg-white">
+        <section className="relative max-w-lg mx-auto mt-4 bg-white md:my-16">
           <h2 className="p-4 font-bold border-b border-gray-100">
             How it works
           </h2>
@@ -117,6 +117,7 @@ const Home = (props: RouteComponentProps) => {
             <img src="/assets/hero.jpg" alt="screenshot" />
           </picture>
           <div
+            className="hidden md:block"
             style={{
               position: 'absolute',
               top: '-2em',
@@ -164,6 +165,18 @@ const Home = (props: RouteComponentProps) => {
             </form>
           </div>
         </section>
+        <footer className="my-8">
+          <p className="text-center text-gray-500">
+            Made by{' '}
+            <a
+              href="https://lzl.dev"
+              className="border-b hover:text-gray-700 hover:border-gray-700"
+            >
+              LZL
+            </a>{' '}
+            with ❤️
+          </p>
+        </footer>
       </main>
     </>
   )
