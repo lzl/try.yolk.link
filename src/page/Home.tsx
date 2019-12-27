@@ -68,7 +68,7 @@ const Home = (props: RouteComponentProps) => {
               <Button
                 disabled={isLoading}
                 loading={isLoading}
-                className="relative px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+                className="relative px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-600"
               >
                 <Confetti active={canConfetti} />
                 Go to your Yolk Link
@@ -79,7 +79,7 @@ const Home = (props: RouteComponentProps) => {
               onClick={handleCreateRoomId}
               disabled={isLoading}
               loading={isLoading}
-              className="px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+              className="px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-600"
             >
               Get Started
             </Button>
@@ -93,7 +93,7 @@ const Home = (props: RouteComponentProps) => {
                 <li key={roomId} className="border-t border-gray-100">
                   <Link
                     to={roomId}
-                    className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-yellow-700 hover:text-white"
+                    className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-yellow-600 hover:text-white"
                   >
                     {presenters.length !== 0 ? (
                       <div>{presenters.join(', ')}</div>
@@ -135,7 +135,7 @@ const Home = (props: RouteComponentProps) => {
               </div>
               <Button
                 type="submit"
-                className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-700 hover:text-white hover:border-transparent"
+                className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
               >
                 Subscribe
               </Button>

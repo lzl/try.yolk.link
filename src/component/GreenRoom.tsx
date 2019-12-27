@@ -202,7 +202,7 @@ const GreenRoom = (props: any) => {
             <div>
               <span className="text-gray-700">{userName}</span>
               <Button
-                className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-700 hover:text-white hover:border-transparent"
+                className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
                 onClick={() => {
                   setUserName('')
                   setToken('')
@@ -233,7 +233,7 @@ const GreenRoom = (props: any) => {
                     placeholder="Your Name"
                   />
                   <Button
-                    className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-700 hover:text-white hover:border-transparent"
+                    className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
                     type="submit"
                     disabled={isSubmitting}
                     loading={isSubmitting}
@@ -245,7 +245,7 @@ const GreenRoom = (props: any) => {
             </Formik>
           )}
           <Button
-            className="px-2 py-2 mt-4 font-bold text-white bg-yellow-500 sm:mt-0 sm:py-1 hover:bg-yellow-700"
+            className="px-2 py-2 mt-4 font-bold text-white bg-yellow-500 sm:mt-0 sm:py-1 hover:bg-yellow-600"
             onClick={() => handleJoinRoom(token)}
             disabled={!token || !userName}
             loading={isLoadingToken}
@@ -260,7 +260,7 @@ const GreenRoom = (props: any) => {
   return (
     <main className="flex max-w-lg mx-auto bg-white sm:mt-8">
       <Button
-        className="w-full h-16 text-xl font-bold text-white bg-yellow-500 hover:bg-yellow-700"
+        className="w-full h-16 text-xl font-bold text-white bg-yellow-500 hover:bg-yellow-600"
         onClick={handleGetStream}
         disabled={isLoadingLocalStream}
         loading={isLoadingLocalStream}
