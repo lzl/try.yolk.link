@@ -125,6 +125,14 @@ const Home = (props: RouteComponentProps) => {
               'url(/assets/hero-captions.png) center top/contain no-repeat',
           }}
         />
+        <ul className="text-sm text-gray-700 md:hidden">
+          <li className="px-4 py-2 border-t border-gray-100">
+            Real-Time Communication at any modern browser.
+          </li>
+          <li className="px-4 py-2 border-t border-gray-100">
+            The yellow border tells you who is talking, instantly.
+          </li>
+        </ul>
       </section>
       <section className="max-w-lg mx-auto mt-4 bg-white">
         <h2 className="px-4 pt-4 font-bold">Keep in touch with Yolk Link</h2>
