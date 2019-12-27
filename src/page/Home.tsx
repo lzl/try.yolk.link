@@ -107,8 +107,30 @@ const Home = (props: RouteComponentProps) => {
             </ul>
           </section>
         )}
+        <section className="relative max-w-lg mx-auto my-16 bg-white">
+          <h2 className="p-4 font-bold border-b border-gray-100">
+            How it works
+          </h2>
+          <picture>
+            {/* <source srcSet="/assets/hero-small.jpg" media="(max-width: 600px)" /> */}
+            {/* <source srcSet="/assets/hero.jpg" media="(min-width: 601px)" /> */}
+            <img src="/assets/hero.jpg" alt="screenshot" />
+          </picture>
+          <div
+            style={{
+              position: 'absolute',
+              top: '-2em',
+              right: '-10em',
+              bottom: '-2em',
+              left: '-10em',
+              zIndex: 1,
+              background:
+                'url(/assets/hero-captions.png) center top/contain no-repeat',
+            }}
+          />
+        </section>
         <section className="max-w-lg mx-auto mt-4 bg-white">
-          <h2 className="px-4 pt-4 font-bold">Keep In Touch with Yolk Link</h2>
+          <h2 className="px-4 pt-4 font-bold">Keep in touch with Yolk Link</h2>
           <p className="px-4 pb-4 mt-1 text-xs leading-tight text-gray-500">
             We send a newsletter every 4-8 weeks, and only when we have
             something important to say. You can unsubscribe at any time.
