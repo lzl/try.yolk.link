@@ -1,41 +1,38 @@
 import React, { useState } from 'react'
 import copy from 'clipboard-copy'
+import cx from 'classnames'
 import Button from './Button'
-import { Link } from '@reach/router'
 
-const CopyUrl = () => {
+const CopyUrl = ({ right }: { right?: boolean }) => {
   const [copied, setCopied] = useState(false)
 
   return (
-    <div className="flex justify-between max-w-3xl mx-auto bg-white">
-      <Link to="/" className="flex items-center px-4 py-4">
-        <h1 className="font-bold text-gray-700 ">Yolk Link</h1>
-      </Link>
-      <div className="flex justify-end flex-1 px-4 py-4">
-        <input
-          id="url"
-          type="url"
-          value={window.location.href}
-          readOnly
-          className="w-full text-sm leading-none text-right text-gray-500"
-          onFocus={e => {
-            e.target.select()
-            e.target.setSelectionRange(0, e.target.value.length)
-          }}
-        />
-        <Button
-          className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
-          disabled={copied}
-          onClick={() => {
-            copy(window.location.href)
-            setCopied(true)
-            setTimeout(() => setCopied(false), 10000)
-          }}
-        >
-          {copied ? 'Copied!' : 'Copy'}
-        </Button>
-      </div>
-    </div>
+    <>
+      <input
+        id="url"
+        type="url"
+        value={window.location.href}
+        readOnly
+        className={cx('flex-1 text-sm leading-none text-gray-500', {
+          'text-right': right,
+        })}
+        onFocus={e => {
+          e.target.select()
+          e.target.setSelectionRange(0, e.target.value.length)
+        }}
+      />
+      <Button
+        className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
+        disabled={copied}
+        onClick={() => {
+          copy(window.location.href)
+          setCopied(true)
+          setTimeout(() => setCopied(false), 10000)
+        }}
+      >
+        {copied ? 'Copied!' : 'Copy'}
+      </Button>
+    </>
   )
 }
 

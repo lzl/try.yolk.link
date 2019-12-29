@@ -178,7 +178,10 @@ const Home = (props: RouteComponentProps) => {
           >
             LZL
           </a>{' '}
-          with ❤️
+          with{' '}
+          <span role="img" aria-label="heart">
+            ❤️
+          </span>
         </p>
       </footer>
     </>

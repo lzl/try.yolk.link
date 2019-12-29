@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { Link } from '@reach/router'
 import { Formik, Form, Field } from 'formik'
 import { useStore } from '../store'
 import Video from './Video'
@@ -189,7 +190,14 @@ const GreenRoom = (props: any) => {
     return (
       <main>
         <div className="sm:mt-8">
-          <CopyUrl />
+          <div className="flex justify-between max-w-3xl mx-auto bg-white">
+            <Link to="/" className="flex items-center px-4 py-4">
+              <h1 className="font-bold text-gray-700 ">Yolk Link</h1>
+            </Link>
+            <div className="flex flex-1 px-4 py-4">
+              <CopyUrl right />
+            </div>
+          </div>
         </div>
         {localStream && (
           <div className="max-w-3xl mx-auto">

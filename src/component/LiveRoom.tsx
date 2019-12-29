@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { navigate } from '@reach/router'
+import { Link, navigate } from '@reach/router'
 import { useStore } from '../store'
 import Video from './Video'
 import { VolumeMeterCanvas } from './VolumeMeter'
@@ -28,7 +28,7 @@ const LiveRoom = (props: any) => {
   const [remoteStreams, setRemoteStreams] = useState<any[]>([])
   const [activeStreamId, setActiveStreamId] = useState('')
   const [activeStreamNumber, setActiveStreamNumber] = useState(0)
-  const [, setParticipants] = useState()
+  const [participants, setParticipants] = useState()
 
   const conferenceInfo = useStore(state => state.conferenceInfo)
   const localStream: MediaStream = useStore(state => state.localStream)
@@ -266,7 +266,14 @@ const LiveRoom = (props: any) => {
     return (
       <main>
         <div className="sm:mt-8">
-          <CopyUrl />
+          <div className="flex justify-between max-w-3xl mx-auto bg-white">
+            <Link to="/" className="flex items-center px-4 py-4">
+              <h1 className="font-bold text-gray-700 ">Yolk Link</h1>
+            </Link>
+            <div className="flex flex-1 px-4 py-4">
+              <CopyUrl right />
+            </div>
+          </div>
         </div>
         <div className="max-w-3xl mx-auto max-h-3/4">
           <div className="relative">
@@ -301,6 +308,22 @@ const LiveRoom = (props: any) => {
             Leave
           </Button>
         </div>
+        {roomId === localStorage.getItem('roomId') &&
+          participants.length === 1 && (
+            <section className="max-w-3xl mx-auto mt-4 bg-white">
+              <h2 className="px-4 pt-4 font-bold">Next Step</h2>
+              <p className="px-4 pb-4 mt-1 text-xs leading-tight text-gray-500">
+                Copy the Yolk Link{' '}
+                <span role="img" aria-label="below">
+                  ⬇️
+                </span>{' '}
+                and invite clients to join this meeting.
+              </p>
+              <div className="flex flex-1 px-4 py-4 border-t border-gray-100">
+                <CopyUrl />
+              </div>
+            </section>
+          )}
       </main>
     )
   } else {
