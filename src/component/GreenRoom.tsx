@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from '@reach/router'
 import { Formik, Form, Field } from 'formik'
+import * as Sentry from '@sentry/browser'
 import { useStore } from '../store'
 import Video from './Video'
 import { VolumeMeterCanvas } from './VolumeMeter'
@@ -72,9 +73,20 @@ const GreenRoom = (props: any) => {
       console.timeEnd('token-create')
       const data = await res.json()
       if (data.statusCode === 404) {
-        if (data.message === 'NotFound') {
-          throw new Error('roomId not found')
+        const ownedRoomId = localStorage.getItem('roomId')
+        if (ownedRoomId === roomId) {
+          localStorage.removeItem('roomId')
         }
+
+        let recentRooms = JSON.parse(
+          localStorage.getItem('recentRooms') || '[]'
+        )
+        if (recentRooms.length > 0) {
+          recentRooms = recentRooms.filter((r: any) => r.roomId !== roomId)
+          localStorage.setItem('recentRooms', JSON.stringify(recentRooms))
+        }
+
+        throw new Error(data.message)
       } else {
         const token: string = data.token
         console.log('Token:', token)
@@ -85,6 +97,7 @@ const GreenRoom = (props: any) => {
     } catch (err) {
       const { name, message } = err
       setError(`${name}: ${message}`)
+      Sentry.captureException(err)
     }
 
     setLoadingToken(false)
@@ -151,10 +164,23 @@ const GreenRoom = (props: any) => {
   }
 
   if (error) {
-    return <div>{error}</div>
+    return (
+      <main className="m-4">
+        <code>{error}</code>
+        <p>
+          Seems like there is something wrong happens here.{' '}
+          <a href="/" className="font-bold text-yellow-500 underline">
+            Go to homepage.
+          </a>
+        </p>
+      </main>
+    )
   }
 
   if (hasNotFoundError) {
+    Sentry.captureMessage(
+      'Seems like there is no Microphone or Camera at current device.'
+    )
     return (
       <main className="m-4">
         <p>Seems like there is no Microphone or Camera at current device.</p>
@@ -166,6 +192,9 @@ const GreenRoom = (props: any) => {
   }
 
   if (hasNotAllowedError) {
+    Sentry.captureMessage(
+      'Seems like Microphone and Camera are blocked by the browser.'
+    )
     return (
       <main className="m-4">
         <p>

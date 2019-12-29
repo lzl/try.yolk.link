@@ -25,8 +25,12 @@ export default async (req: NowRequest, res: NowResponse) => {
     })
     const data = await result.json()
 
+    if (data.error) {
+      throw new Error(`${data.error.message} (${data.error.code})`)
+    }
+
     res.status(200).json({ token: data.token })
   } catch (err) {
-    res.status(404).json({ statusCode: 404, message: err.name })
+    res.status(404).json({ statusCode: 404, message: err.message })
   }
 }
