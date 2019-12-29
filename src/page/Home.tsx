@@ -140,31 +140,31 @@ const Home = (props: RouteComponentProps) => {
         <h2 className="p-4 font-bold">Why choose Yolk Link?</h2>
         <ul className="text-sm text-gray-700">
           <li className="px-4 py-2 border-t border-gray-100">
-            <span role="img" aria-label="check">
+            <span role="img" aria-label="check" className="mr-1">
               ✅
             </span>
             Just works in your browser - no downloads, no plugins, no login.
           </li>
           <li className="px-4 py-2 border-t border-gray-100">
-            <span role="img" aria-label="check">
+            <span role="img" aria-label="check" className="mr-1">
               ✅
             </span>
             Easy set up - check permission, tell your name, join the meeting.
           </li>
           <li className="px-4 py-2 border-t border-gray-100">
-            <span role="img" aria-label="check">
+            <span role="img" aria-label="check" className="mr-1">
               ✅
             </span>
             What you see is what clients see - never mess up those windows.
           </li>
           <li className="px-4 py-2 border-t border-gray-100">
-            <span role="img" aria-label="check">
+            <span role="img" aria-label="check" className="mr-1">
               ✅
             </span>
             The Yolk Border indicates who is talking - save lots of energy.
           </li>
           <li className="px-4 py-2 border-t border-gray-100">
-            <span role="img" aria-label="check">
+            <span role="img" aria-label="check" className="mr-1">
               ✅
             </span>
             Always free unless you want more - yes, the Pro version is coming.
