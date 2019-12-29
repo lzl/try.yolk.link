@@ -106,7 +106,9 @@ const Home = (props: RouteComponentProps) => {
         </section>
       )}
       <section className="relative max-w-lg mx-auto mt-4 bg-white md:my-16">
-        <h2 className="p-4 font-bold border-b border-gray-100">How it works</h2>
+        <h2 className="p-4 font-bold border-b border-gray-100">
+          How Yolk Link works
+        </h2>
         <picture>
           {/* <source srcSet="/assets/hero-small.jpg" media="(max-width: 600px)" /> */}
           {/* <source srcSet="/assets/hero.jpg" media="(min-width: 601px)" /> */}
@@ -131,6 +133,41 @@ const Home = (props: RouteComponentProps) => {
           </li>
           <li className="px-4 py-2 border-t border-gray-100">
             The yellow border tells you who is talking, instantly.
+          </li>
+        </ul>
+      </section>
+      <section className="relative max-w-lg mx-auto mt-4 bg-white">
+        <h2 className="p-4 font-bold">Why choose Yolk Link?</h2>
+        <ul className="text-sm text-gray-700">
+          <li className="px-4 py-2 border-t border-gray-100">
+            <span role="img" aria-label="check">
+              ✅
+            </span>
+            Just works in your browser - no downloads, no plugins, no login.
+          </li>
+          <li className="px-4 py-2 border-t border-gray-100">
+            <span role="img" aria-label="check">
+              ✅
+            </span>
+            Easy set up - check permission, tell your name, join the meeting.
+          </li>
+          <li className="px-4 py-2 border-t border-gray-100">
+            <span role="img" aria-label="check">
+              ✅
+            </span>
+            What you see is what clients see - never mess up those windows.
+          </li>
+          <li className="px-4 py-2 border-t border-gray-100">
+            <span role="img" aria-label="check">
+              ✅
+            </span>
+            The Yolk Border indicates who is talking - save lots of energy.
+          </li>
+          <li className="px-4 py-2 border-t border-gray-100">
+            <span role="img" aria-label="check">
+              ✅
+            </span>
+            Always free unless you want more - yes, the Pro version is coming.
           </li>
         </ul>
       </section>
