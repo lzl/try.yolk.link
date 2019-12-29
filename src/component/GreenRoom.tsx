@@ -266,16 +266,20 @@ const GreenRoom = (props: any) => {
   }
 
   return (
-    <main className="flex max-w-lg mx-auto bg-white sm:mt-8">
+    <section className="max-w-lg mx-auto bg-white sm:mt-8">
+      <h2 className="px-4 pt-4 font-bold">Next Step</h2>
+      <p className="px-4 pb-4 mt-1 text-xs leading-tight text-gray-500">
+        For security reasons, this video meeting needs your permission.
+      </p>
       <Button
-        className="w-full h-16 text-xl font-bold text-white bg-yellow-500 hover:bg-yellow-600"
+        className="w-full h-12 font-bold text-white bg-yellow-500 hover:bg-yellow-600"
         onClick={handleGetStream}
         disabled={isLoadingLocalStream}
         loading={isLoadingLocalStream}
       >
         Allow to use Microphone and Camera
       </Button>
-    </main>
+    </section>
   )
 }
 
