@@ -54,6 +54,7 @@ const GreenRoom = (props: any) => {
         handleGetStream()
       } else {
         setError(`${name}: ${message}`)
+        Sentry.captureException(err)
       }
     }
 
@@ -159,6 +160,7 @@ const GreenRoom = (props: any) => {
         if (token) handleJoinRoom(token)
       } else {
         setError(`${name}: ${message}`)
+        Sentry.captureException(err)
       }
     }
   }
