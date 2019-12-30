@@ -1,5 +1,6 @@
 {
   "env": {
-    "FAUNADB_SECRET_KEY": "@try-yolk-link-faunadb-secret-key"
+    "FAUNADB_SECRET_KEY": "@try-yolk-link-faunadb-secret-key",
+    "OWT_API_URL": "@owt-api-url"
   }
 }

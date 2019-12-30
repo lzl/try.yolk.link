@@ -3,7 +3,7 @@ import faunadb from 'faunadb'
 import fetch from 'node-fetch'
 
 // const apiUrl = "http://localhost:5000";
-const apiUrl = 'https://rtc.lililulu.cn/api'
+const apiUrl = process.env.OWT_API_URL
 
 export default async (req: NowRequest, res: NowResponse) => {
   try {
