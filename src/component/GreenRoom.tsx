@@ -25,6 +25,7 @@ const GreenRoom = (props: any) => {
   const [hasNotFoundError, setHasNotFoundError] = useState(false)
   const [hasNotAllowedError, setHasNotAllowedError] = useState(false)
   const [error, setError] = useState('')
+  const [isWaiting, setIsWaiting] = useState(false)
 
   const localStream: MediaStream = useStore(state => state.localStream)
   const setLocalStream = useStore(state => state.setLocalStream)
@@ -148,11 +149,14 @@ const GreenRoom = (props: any) => {
   async function handleJoinRoom(token: string) {
     try {
       if (token) {
+        setIsWaiting(true)
         const info = await conference.join(token)
+        setIsWaiting(false)
         setConferenceInfo(info)
         setIsJoined(true)
       }
     } catch (err) {
+      setIsWaiting(false)
       const { name, message } = err
       setToken('')
       if (message === 'Expired') {
@@ -287,7 +291,7 @@ const GreenRoom = (props: any) => {
             className="px-2 py-2 mt-4 font-bold text-white bg-yellow-500 sm:mt-0 sm:py-1 hover:bg-yellow-600"
             onClick={() => handleJoinRoom(token)}
             disabled={!token || !userName}
-            loading={isLoadingToken}
+            loading={isLoadingToken || isWaiting}
           >
             Join Meeting
           </Button>
