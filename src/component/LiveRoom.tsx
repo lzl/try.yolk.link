@@ -72,6 +72,30 @@ const LiveRoom = (props: any) => {
     }
   }, [publishedStream])
 
+  // async function handlePubAndMixStream() {
+  //   try {
+  //     // pub local stream
+  //     const toPublishStream = new Owt.Base.LocalStream(
+  //       localStream,
+  //       new Owt.Base.StreamSourceInfo('mic', 'camera'),
+  //       { userName: localStorage.getItem('userName') }
+  //     )
+  //     const stream = await conference.publish(toPublishStream, {
+  //       audio: [{ codec: { name: 'opus' }, maxBitrate: 300 }],
+  //       video: [{ codec: { name: 'h264' }, maxBitrate: 2048 }],
+  //     })
+  //     stream.addEventListener('error', (err: any) => {
+  //       console.log('Publication error: ' + err.error.message)
+  //     })
+  //     console.log('published stream:', stream)
+
+  //     // mix stream
+  //     await handleMixStreamToRoom(roomId, stream.id)
+  //   } catch (err) {
+  //     console.log('handlePubAndMixStream err:', err)
+  //   }
+  // }
+
   useEffect(() => {
     console.log('LiveRoom START')
 
@@ -304,6 +328,7 @@ const LiveRoom = (props: any) => {
           <Button
             className="px-2 py-1 ml-2 font-semibold text-red-500 bg-transparent border border-red-500 hover:bg-red-700 hover:border-transparent hover:text-white"
             onClick={() => navigate('/')}
+            // onClick={handlePubAndMixStream}
           >
             Leave
           </Button>
