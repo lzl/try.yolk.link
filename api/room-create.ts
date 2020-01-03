@@ -181,6 +181,18 @@ export default async (req: NowRequest, res: NowResponse) => {
       )
     )
 
+    if (process.env.SLACK_WEBHOOK) {
+      await fetch(process.env.SLACK_WEBHOOK, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: JSON.stringify({ type: 'room_creation', roomId, roomKey }),
+        }),
+      })
+    }
+
     res.status(200).json({ roomId })
   } catch (err) {
     res.status(404).json({ statusCode: 404, message: err.name })
