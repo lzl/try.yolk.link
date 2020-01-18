@@ -30,11 +30,18 @@ exports[`Should match Snapshot 1`] = `
     <section
       class="flex items-center justify-center p-8"
     >
-      <button
-        class="px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-600"
+      <a
+        href="/fakeRoomId"
       >
-        Get Started
-      </button>
+        <button
+          class="relative px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-600"
+        >
+          <div
+            style="position: absolute; top: 50%; left: 50%;"
+          />
+          Go to your Yolk Link
+        </button>
+      </a>
     </section>
   </header>
   <section
