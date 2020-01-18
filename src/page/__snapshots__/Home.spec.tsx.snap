@@ -1,0 +1,215 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should match Snapshot 1`] = `
+<DocumentFragment>
+  <header
+    class="max-w-lg mx-auto text-center bg-white"
+  >
+    <h1
+      class="pt-8 text-4xl font-bold leading-none text-gray-900 sm:mt-8"
+    >
+      Give Yolk Link a try
+    </h1>
+    <h2
+      class="mt-4 text-xl leading-snug text-gray-700"
+    >
+      <p>
+        A link connects you with
+      </p>
+      <p>
+        your 
+        <span>
+          clients
+        </span>
+         
+        <em>
+          face-to-face
+        </em>
+      </p>
+    </h2>
+    <section
+      class="flex items-center justify-center p-8"
+    >
+      <button
+        class="px-4 py-2 font-bold text-white bg-yellow-500 hover:bg-yellow-600"
+      >
+        Get Started
+      </button>
+    </section>
+  </header>
+  <section
+    class="relative max-w-lg mx-auto mt-4 bg-white md:my-16"
+  >
+    <h2
+      class="p-4 font-bold border-b border-gray-100"
+    >
+      How Yolk Link works
+    </h2>
+    <picture>
+      <img
+        alt="screenshot"
+        src="/assets/hero.jpg"
+      />
+    </picture>
+    <div
+      class="hidden md:block"
+      style="position: absolute; top: -2em; right: -10em; bottom: -2em; left: -10em; z-index: 1;"
+    />
+    <ul
+      class="text-sm text-gray-700 md:hidden"
+    >
+      <li
+        class="px-4 py-2 border-t border-gray-100"
+      >
+        Real-Time Communication at any modern browser.
+      </li>
+      <li
+        class="px-4 py-2 border-t border-gray-100"
+      >
+        The yellow border tells you who is talking, instantly.
+      </li>
+    </ul>
+  </section>
+  <section
+    class="relative max-w-lg mx-auto mt-4 bg-white"
+  >
+    <h2
+      class="p-4 font-bold"
+    >
+      Why choose Yolk Link?
+    </h2>
+    <ul
+      class="text-sm text-gray-700"
+    >
+      <li
+        class="px-4 py-2 border-t border-gray-100"
+      >
+        <span
+          aria-label="check"
+          class="mr-1"
+          role="img"
+        >
+          ✅
+        </span>
+        Just works in your browser - no downloads, no plugins, no login.
+      </li>
+      <li
+        class="px-4 py-2 border-t border-gray-100"
+      >
+        <span
+          aria-label="check"
+          class="mr-1"
+          role="img"
+        >
+          ✅
+        </span>
+        Easy set up - check permission, tell your name, join the meeting.
+      </li>
+      <li
+        class="px-4 py-2 border-t border-gray-100"
+      >
+        <span
+          aria-label="check"
+          class="mr-1"
+          role="img"
+        >
+          ✅
+        </span>
+        What you see is what clients see - never mess up those windows.
+      </li>
+      <li
+        class="px-4 py-2 border-t border-gray-100"
+      >
+        <span
+          aria-label="check"
+          class="mr-1"
+          role="img"
+        >
+          ✅
+        </span>
+        The Yolk Border indicates who is talking - save lots of energy.
+      </li>
+      <li
+        class="px-4 py-2 border-t border-gray-100"
+      >
+        <span
+          aria-label="check"
+          class="mr-1"
+          role="img"
+        >
+          ✅
+        </span>
+        Always free unless you want more - yes, the Pro version is coming.
+      </li>
+    </ul>
+  </section>
+  <section
+    class="max-w-lg mx-auto mt-4 bg-white"
+  >
+    <h2
+      class="px-4 pt-4 font-bold"
+    >
+      Keep in touch with Yolk Link
+    </h2>
+    <p
+      class="px-4 pb-4 mt-1 text-xs leading-tight text-gray-500"
+    >
+      We send a newsletter every 4-8 weeks, and only when we have something important to say. You can unsubscribe at any time.
+    </p>
+    <div
+      class="p-4 border-t border-gray-100"
+    >
+      <form
+        action="https://link.us4.list-manage.com/subscribe/post?u=835d1734463030dbb86a006b9&id=e7ab6e45d6"
+        class="flex"
+        method="post"
+        target="_blank"
+      >
+        <input
+          class="flex-1 text-gray-700 border-b border-b-2 appearance-none focus:outline-none"
+          name="EMAIL"
+          placeholder="youremail@domain.com"
+          type="email"
+        />
+        <div
+          aria-hidden="true"
+          class="hidden"
+        >
+          <input
+            name="b_835d1734463030dbb86a006b9_e7ab6e45d6"
+            tabindex="-1"
+            type="text"
+          />
+        </div>
+        <button
+          class="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
+        >
+          Subscribe
+        </button>
+      </form>
+    </div>
+  </section>
+  <footer
+    class="my-8"
+  >
+    <p
+      class="text-center text-gray-500"
+    >
+      Made by 
+      <a
+        class="border-b hover:text-gray-700 hover:border-gray-700"
+        href="https://lzl.dev"
+      >
+        LZL
+      </a>
+       with 
+      <span
+        aria-label="heart"
+        role="img"
+      >
+        ❤️
+      </span>
+    </p>
+  </footer>
+</DocumentFragment>
+`;
