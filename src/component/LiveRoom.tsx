@@ -299,7 +299,7 @@ const LiveRoom = (props: any) => {
             </div>
           </div>
         </div>
-        <div className="max-w-3xl mx-auto max-h-3/4">
+        <div className="max-w-3xl mx-auto">
           <div className="relative">
             <Video stream={mixedMediaStream} muted={false} />
             <RemoteMixedStreamGrid

@@ -42,7 +42,7 @@ function Video({ stream, muted }: IVideo) {
       ref={el => {
         videoElem = el
       }}
-      className="block w-full max-h-3/4"
+      className="block w-full"
     >
       this browser does not supported video tag
     </video>
