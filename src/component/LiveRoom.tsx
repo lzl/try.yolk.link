@@ -286,19 +286,19 @@ const LiveRoom = (props: any) => {
     return <div>{error}</div>
   }
 
-  if (mixedMediaStream) {
-    return (
-      <main>
-        <div className="sm:mt-8">
-          <div className="flex justify-between max-w-3xl mx-auto bg-white">
-            <Link to="/" className="flex items-center px-4 py-4">
-              <h1 className="font-bold text-gray-700 ">Yolk Link</h1>
-            </Link>
-            <div className="flex flex-1 px-4 py-4">
-              <CopyUrl right />
-            </div>
+  return (
+    <main>
+      <div className="sm:mt-8">
+        <div className="flex justify-between max-w-3xl mx-auto bg-white">
+          <Link to="/" className="flex items-center px-4 py-4">
+            <h1 className="font-bold text-gray-700 ">Yolk Link</h1>
+          </Link>
+          <div className="flex flex-1 px-4 py-4">
+            <CopyUrl right />
           </div>
         </div>
+      </div>
+      {mixedMediaStream && (
         <div className="max-w-3xl mx-auto">
           <div className="relative">
             <Video stream={mixedMediaStream} muted={false} />
@@ -318,42 +318,40 @@ const LiveRoom = (props: any) => {
             <VolumeMeterCanvas localStream={localStream} />
           )}
         </div>
-        <div className="flex justify-between max-w-3xl px-4 py-4 mx-auto bg-white">
-          <Button
-            className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
-            onClick={handleToggleAudio}
-          >
-            {isMicMuted ? 'Unmute Mic' : 'Mute Mic'}
-          </Button>
-          <Button
-            className="px-2 py-1 ml-2 font-semibold text-red-500 bg-transparent border border-red-500 hover:bg-red-700 hover:border-transparent hover:text-white"
-            onClick={() => navigate('/')}
-            // onClick={handlePubAndMixStream}
-          >
-            Leave
-          </Button>
-        </div>
-        {roomId === localStorage.getItem('roomId') &&
-          participants.length === 1 && (
-            <section className="max-w-3xl mx-auto mt-4 bg-white">
-              <h2 className="px-4 pt-4 font-bold">Next Step</h2>
-              <p className="px-4 pb-4 mt-1 text-xs leading-tight text-gray-500">
-                Copy the Yolk Link{' '}
-                <span role="img" aria-label="below">
-                  ⬇️
-                </span>{' '}
-                and invite clients to join this meeting.
-              </p>
-              <div className="flex flex-1 px-4 py-4 border-t border-gray-100">
-                <CopyUrl />
-              </div>
-            </section>
-          )}
-      </main>
-    )
-  } else {
-    return null
-  }
+      )}
+      <div className="flex justify-between max-w-3xl px-4 py-4 mx-auto bg-white">
+        <Button
+          className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
+          onClick={handleToggleAudio}
+          disabled={!mixedMediaStream}
+        >
+          {isMicMuted ? 'Unmute Mic' : 'Mute Mic'}
+        </Button>
+        <Button
+          className="px-2 py-1 ml-2 font-semibold text-red-500 bg-transparent border border-red-500 hover:bg-red-700 hover:border-transparent hover:text-white"
+          onClick={() => navigate('/')}
+          // onClick={handlePubAndMixStream}
+        >
+          Leave
+        </Button>
+      </div>
+      {/* {roomId === localStorage.getItem('roomId') && participants.length === 1 && (
+        <section className="max-w-3xl mx-auto mt-4 bg-white">
+          <h2 className="px-4 pt-4 font-bold">Next Step</h2>
+          <p className="px-4 pb-4 mt-1 text-xs leading-tight text-gray-500">
+            Copy the Yolk Link{' '}
+            <span role="img" aria-label="below">
+              ⬇️
+            </span>{' '}
+            and invite clients to join this meeting.
+          </p>
+          <div className="flex flex-1 px-4 py-4 border-t border-gray-100">
+            <CopyUrl />
+          </div>
+        </section>
+      )} */}
+    </main>
+  )
 }
 
 function RemoteMixedStreamGrid({
