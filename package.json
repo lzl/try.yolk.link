@@ -27,6 +27,7 @@
     "@types/react-dom": "^16.9.4",
     "@types/react-helmet": "^5.0.15",
     "@types/webrtc": "0.0.25",
+    "@xstate/react": "^0.8.1",
     "classnames": "^2.2.6",
     "clipboard-copy": "^3.1.0",
     "dom-confetti": "^0.1.1",
@@ -40,6 +41,7 @@
     "react-scripts": "3.3.0",
     "typescript": "^3.7.5",
     "vconsole": "^3.3.4",
+    "xstate": "^4.7.6",
     "zustand": "^2.2.2"
   },
   "devDependencies": {

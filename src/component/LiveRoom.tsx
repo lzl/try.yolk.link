@@ -28,6 +28,7 @@ const LiveRoom = (props: any) => {
   const [remoteStreams, setRemoteStreams] = useState<any[]>([])
   const [activeStreamId, setActiveStreamId] = useState('')
   const [activeStreamNumber, setActiveStreamNumber] = useState(0)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [participants, setParticipants] = useState()
 
   const conferenceInfo = useStore(state => state.conferenceInfo)
