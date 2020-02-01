@@ -8,6 +8,7 @@ import Video from '../component/Video'
 import { VolumeMeterCanvas } from '../component/VolumeMeter'
 import Button from '../component/Button'
 import CopyUrl from '../component/CopyUrl'
+import Alert from '../component/Alert'
 
 interface Props
   extends RouteComponentProps<{
@@ -128,43 +129,46 @@ const Room = (props: Props) => {
 
   if (current.matches({ device: 'failed' })) {
     return (
-      <main className="m-4">
-        <p>Seems like there is no Microphone or Camera at current device.</p>
-        <p className="mt-2">
-          You can resolve this issue by open current url with your mobile phone.
-        </p>
-      </main>
+      <Alert
+        title="Microphone or Camera is not found"
+        content="Seems like there is no Microphone or Camera at current device."
+      />
     )
   }
 
   if (current.matches({ localStream: 'failed' })) {
     return (
-      <main className="m-4">
-        <p>
-          Seems like Microphone and Camera are <em>blocked</em> by the browser.
-        </p>
-        <p className="mt-2">
-          You can resolve this issue with the help of{' '}
-          <a
-            className="font-bold text-yellow-500 underline"
-            href="https://www.howtogeek.com/411117/how-to-change-a-sites-camera-and-microphone-permissions-in-chrome/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            this How-To article.
-          </a>
-        </p>
-      </main>
+      <Alert
+        title={
+          <>
+            Microphone and Camera are <em>blocked</em> by the browser
+          </>
+        }
+        content={
+          <>
+            <p className="mt-2">
+              You can resolve this issue with the help of{' '}
+              <a
+                className="font-bold text-yellow-500 underline"
+                href="https://www.howtogeek.com/411117/how-to-change-a-sites-camera-and-microphone-permissions-in-chrome/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                this How-To article
+              </a>
+            </p>
+          </>
+        }
+      />
     )
   }
 
   if (current.matches({ device: 'manual' })) {
     return (
-      <section className="max-w-lg mx-auto bg-white sm:mt-8">
-        <h2 className="px-4 pt-4 font-bold">Next Step</h2>
-        <p className="px-4 pb-4 mt-1 text-xs leading-tight text-gray-500">
-          For security reasons, this video meeting needs your permission.
-        </p>
+      <Alert
+        title="Next Step"
+        content="For security reasons, this video meeting needs your permission."
+      >
         <Button
           className="w-full h-12 font-bold text-white bg-yellow-500 hover:bg-yellow-600"
           onClick={() => send({ type: 'GET_LOCALSTREAM' })}
@@ -173,7 +177,7 @@ const Room = (props: Props) => {
         >
           Allow to use Microphone and Camera
         </Button>
-      </section>
+      </Alert>
     )
   }
 
@@ -181,38 +185,50 @@ const Room = (props: Props) => {
     if (errorName === 'SyntaxError') {
       if (errorMessage === 'Unexpected token < in JSON at position 0') {
         return (
-          <main className="m-4">
-            <p>Can not access to the API server.</p>
-          </main>
+          <Alert
+            title="Error happens"
+            content="Can not access to the API server."
+          />
         )
       }
     }
 
     if (errorName === 'FetchError') {
       return (
-        <main className="m-4">
-          <p>Can not access to the RTC server.</p>
-        </main>
+        <Alert
+          title="Error happens"
+          content="Can not access to the RTC server."
+        />
       )
     }
 
     if (errorName === 'NotFound') {
       if (errorMessage === 'instance not found') {
         return (
-          <main className="m-4">
-            <p>This room is not existed.</p>
-          </main>
+          <Alert
+            title="This room does not exist"
+            content="Seems like this url is uncorrect."
+          />
         )
       }
     }
 
-    return (
-      <main className="m-4">
-        <p>
-          {errorName}: {errorMessage}
-        </p>
-      </main>
-    )
+    if (errorName === 'Error') {
+      if (errorMessage === 'Room is full') {
+        return (
+          <Alert
+            title={
+              <>
+                This room is <em>full</em>
+              </>
+            }
+            content="Please contact room owner to increase room quota."
+          />
+        )
+      }
+    }
+
+    return <Alert title={errorName} content={errorMessage} />
   }
 
   return (
