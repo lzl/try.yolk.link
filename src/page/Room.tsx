@@ -269,7 +269,7 @@ const Room = (props: Props) => {
                 />
                 <Button
                   // className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
-                  className="px-2 py-2 mt-4 font-bold text-white bg-yellow-500 sm:mt-0 sm:py-1 hover:bg-yellow-600"
+                  className="px-2 py-1 ml-2 font-bold text-white bg-yellow-500 hover:bg-yellow-600"
                   type="submit"
                   disabled={isSubmitting}
                   loading={isSubmitting}
