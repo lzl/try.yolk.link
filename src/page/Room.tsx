@@ -232,7 +232,7 @@ const Room = (props: Props) => {
   }
 
   return (
-    <main>
+    <main className="container mx-auto">
       <div className="sm:mt-8">
         <div className="flex justify-between max-w-3xl mx-auto bg-white">
           <Link to="/" className="flex items-center px-4 py-4">
