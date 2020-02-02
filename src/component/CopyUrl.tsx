@@ -22,7 +22,8 @@ const CopyUrl = ({ right }: { right?: boolean }) => {
         }}
       />
       <Button
-        className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
+        // className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
+        className="px-2 py-1 ml-2 font-semibold text-gray-800 bg-white border border-gray-400 hover:bg-gray-100"
         disabled={copied}
         onClick={() => {
           copy(window.location.href)
