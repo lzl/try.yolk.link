@@ -2,4 +2,4 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 Run with `now dev`.
 
-![screenshot](/public/assets/hero.jpg)
+[![screenshot](/public/assets/hero.jpg)](https://try.yolk.link/)
