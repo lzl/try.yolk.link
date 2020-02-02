@@ -434,7 +434,7 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
               EDIT_USERNAME: 'editing',
             },
             after: {
-              60000: 'saved',
+              120000: 'saved', // refresh token every 2min
             },
           },
           joining: {
