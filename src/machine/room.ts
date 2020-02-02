@@ -395,7 +395,9 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
             on: {
               '': {
                 target: 'loading',
-                cond: context => context.errorName === 'OverconstrainedError',
+                cond: context =>
+                  context.errorName === 'OverconstrainedError' ||
+                  context.errorMessage === 'Invalid constraint',
               },
             },
           },
