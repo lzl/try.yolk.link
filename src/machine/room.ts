@@ -1,4 +1,5 @@
 import { Machine, assign } from 'xstate'
+import nanoid from 'nanoid'
 
 declare const Owt: any
 export const conference = new Owt.Conference.ConferenceClient()
@@ -160,6 +161,20 @@ async function mixPubedLocalStream(roomId: string, streamId: string) {
   })
 }
 
+const isProduction = process.env.NODE_ENV === 'production'
+
+function formatBody(body: any, context: RoomContext) {
+  const { userName, deviceId } = context
+  if (userName) {
+    body = { ...body, userName }
+  }
+  if (deviceId) {
+    body = { ...body, deviceId }
+  }
+
+  return JSON.stringify(body)
+}
+
 interface RoomContext {
   errorName: any
   errorMessage: any
@@ -174,6 +189,7 @@ interface RoomContext {
   mixedRemoteStream: any
   activeStreamId: string | null
   activeStreamNumber: number | null
+  deviceId: string | null
 }
 
 interface RoomStateSchema {
@@ -271,6 +287,7 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
       mixedRemoteStream: null,
       activeStreamId: null,
       activeStreamNumber: null,
+      deviceId: null,
     },
     states: {
       device: {
@@ -280,6 +297,7 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
             on: {
               '': {
                 target: 'input',
+                actions: ['setDeviceId', 'logRoomVisited'],
               },
             },
           },
@@ -354,9 +372,14 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
               src: getLocalStream,
               onDone: {
                 target: 'final',
-                actions: assign({
-                  localStream: (context, event) => event.data,
-                }),
+                actions: [
+                  () => {
+                    RESOLUTION_RETRY = 0
+                  },
+                  assign({
+                    localStream: (context, event) => event.data,
+                  }),
+                ],
               },
               onError: {
                 target: 'failed',
@@ -443,14 +466,17 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
               src: (context, event) => joinRoom(context.token),
               onDone: {
                 target: 'final',
-                actions: assign({
-                  conferenceInfo: (context, event) => event.data,
-                  activeStreamId: (context, event) => event.data.activeInput,
-                  remoteStreams: (context, event) =>
-                    event.data.remoteStreams.filter(
-                      (s: any) => !s.id.includes('common')
-                    ),
-                }),
+                actions: [
+                  'logRoomJoined',
+                  assign({
+                    conferenceInfo: (context, event) => event.data,
+                    activeStreamId: (context, event) => event.data.activeInput,
+                    remoteStreams: (context, event) =>
+                      event.data.remoteStreams.filter(
+                        (s: any) => !s.id.includes('common')
+                      ),
+                  }),
+                ],
               },
               onError: {
                 target: 'failed',
@@ -664,19 +690,52 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
   },
   {
     actions: {
-      leaveConference: (context, event) => {
-        if (conference) conference.leave()
-      },
       setUserName: assign({
-        userName: (context, event) => event.userName.trim(),
+        userName: (_, event) => event.userName.trim(),
       }),
-      setUserNameToLocalStorage: (context, event) =>
+      setUserNameToLocalStorage: (_, event) =>
         localStorage.setItem('userName', event.userName.trim()),
-      muteAudio: (context, event) => {
+      muteAudio: context => {
         context.pubedLocalStream.mute('audio')
       },
-      unmuteAudio: (context, event) => {
+      unmuteAudio: context => {
         context.pubedLocalStream.unmute('audio')
+      },
+      setDeviceId: assign({
+        deviceId: (context, event) => {
+          let deviceId = localStorage.getItem('deviceId')
+          if (!deviceId) {
+            deviceId = nanoid()
+            localStorage.setItem('deviceId', deviceId)
+          }
+          return deviceId
+        },
+      }),
+      logRoomVisited: context => {
+        if (!isProduction) return
+        if (!navigator.sendBeacon) return
+
+        const body = formatBody(
+          {
+            type: 'room_visited',
+            roomId: context.roomId,
+          },
+          context
+        )
+        navigator.sendBeacon('/api/log', body)
+      },
+      logRoomJoined: context => {
+        if (!isProduction) return
+        if (!navigator.sendBeacon) return
+
+        const body = formatBody(
+          {
+            type: 'room_joined',
+            roomId: context.roomId,
+          },
+          context
+        )
+        navigator.sendBeacon('/api/log', body)
       },
     },
     guards: {

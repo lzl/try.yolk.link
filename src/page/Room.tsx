@@ -9,6 +9,7 @@ import { VolumeMeterCanvas } from '../component/VolumeMeter'
 import Button from '../component/Button'
 import CopyUrl from '../component/CopyUrl'
 import Alert from '../component/Alert'
+import { useLogRoomDuration, useLogRoomInterval } from '../hook/useLog'
 
 interface Props
   extends RouteComponentProps<{
@@ -33,6 +34,9 @@ const Room = (props: Props) => {
     activeStreamId,
     activeStreamNumber,
   } = current.context
+
+  useLogRoomDuration({ roomId })
+  useLogRoomInterval({ roomId })
 
   useEffect(() => {
     return function cleanup() {
