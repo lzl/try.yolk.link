@@ -2,6 +2,6 @@
   "env": {
     "FAUNADB_SECRET_KEY": "@try-yolk-link-faunadb-secret-key",
     "OWT_API_URL": "@owt-api-url",
-    "SLACK_WEBHOOK": "@slack-webhook"
+    "SLACK_WEBHOOK_URL": "@slack-webhook-url"
   }
 }

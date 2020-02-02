@@ -30,16 +30,15 @@ export default async (req: NowRequest, res: NowResponse) => {
       )
     )
 
-    await fetch(
-      'https://hooks.slack.com/services/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',
-      {
+    if (process.env.SLACK_WEBHOOK_URL) {
+      await fetch(process.env.SLACK_WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ text: JSON.stringify(data) }),
-      }
-    )
+      })
+    }
 
     res.status(200).json({ ok: true })
   } catch (err) {

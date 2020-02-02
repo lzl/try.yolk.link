@@ -181,8 +181,8 @@ export default async (req: NowRequest, res: NowResponse) => {
       )
     )
 
-    if (process.env.SLACK_WEBHOOK) {
-      await fetch(process.env.SLACK_WEBHOOK, {
+    if (process.env.SLACK_WEBHOOK_URL) {
+      await fetch(process.env.SLACK_WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
