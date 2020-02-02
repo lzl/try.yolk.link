@@ -233,26 +233,24 @@ const Room = (props: Props) => {
 
   return (
     <main className="container mx-auto">
-      <div className="sm:mt-8">
-        <div className="flex justify-between max-w-3xl mx-auto bg-white">
-          <Link to="/" className="flex items-center px-4 py-4">
-            <h1 className="font-bold text-gray-700 ">Yolk Link</h1>
-          </Link>
-          <div className="flex flex-1 px-4 py-4">
-            <CopyUrl right />
-          </div>
+      <div className="flex justify-between bg-white">
+        <Link to="/" className="flex items-center px-4 py-4">
+          <h1 className="font-bold text-gray-700 ">Yolk Link</h1>
+        </Link>
+        <div className="flex flex-1 px-4 py-4">
+          <CopyUrl right />
         </div>
       </div>
 
       {showLocalStream && (
-        <div className="max-w-3xl mx-auto">
+        <>
           <Video stream={localStream} muted={true} />
           <VolumeMeterCanvas localStream={localStream} />
-        </div>
+        </>
       )}
 
       {showMixedStream && (
-        <div className="max-w-3xl mx-auto">
+        <>
           <div className="relative">
             <Video stream={mixedMediaStream} muted={false} />
             <RemoteMixedStreamGrid
@@ -274,11 +272,11 @@ const Room = (props: Props) => {
           ) : (
             <div className="w-full h-2" />
           )}
-        </div>
+        </>
       )}
 
       {showUserNameEditForm && (
-        <div className="flex flex-col justify-between max-w-3xl px-4 py-4 mx-auto bg-white sm:flex-row">
+        <div className="flex flex-col justify-between px-4 py-4 bg-white sm:flex-row">
           <Formik
             initialValues={{ userName }}
             onSubmit={(values, { setSubmitting }) => {
@@ -317,7 +315,7 @@ const Room = (props: Props) => {
       )}
 
       {showJoinButton && (
-        <div className="flex flex-col justify-between max-w-3xl px-4 py-4 mx-auto bg-white sm:flex-row">
+        <div className="flex flex-col justify-between px-4 py-4 bg-white sm:flex-row">
           <div>
             <span className="text-gray-700">{userName}</span>
             <Button
@@ -340,7 +338,7 @@ const Room = (props: Props) => {
       )}
 
       {showController && (
-        <div className="flex justify-between max-w-3xl px-4 py-4 mx-auto bg-white">
+        <div className="flex justify-between px-4 py-4 bg-white">
           <Button
             className="px-2 py-1 ml-2 font-semibold text-yellow-500 bg-transparent border border-yellow-500 hover:bg-yellow-600 hover:text-white hover:border-transparent"
             onClick={() => send('TOGGLE_AUDIO')}
