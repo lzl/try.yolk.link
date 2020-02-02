@@ -233,47 +233,14 @@ const Room = (props: Props) => {
 
   return (
     <main className="container mx-auto">
-      <div className="flex justify-between bg-white">
-        <Link to="/" className="flex items-center px-4 py-4">
+      <div className="flex justify-between mb-px bg-white">
+        <Link to="/" className="flex items-center flex-shrink-0 px-4 py-4">
           <h1 className="font-bold text-gray-700 ">Yolk Link</h1>
         </Link>
         <div className="flex flex-1 px-4 py-4">
           <CopyUrl right />
         </div>
       </div>
-
-      {showLocalStream && (
-        <>
-          <Video stream={localStream} muted={true} />
-          <VolumeMeterCanvas localStream={localStream} />
-        </>
-      )}
-
-      {showMixedStream && (
-        <>
-          <div className="relative">
-            <Video stream={mixedMediaStream} muted={false} />
-            <RemoteMixedStreamGrid
-              remoteStreamsLength={remoteStreams.length}
-              activeStreamNumber={activeStreamNumber}
-              remoteStreams={remoteStreams}
-            />
-            <div
-              className="absolute top-0 left-0 w-full h-full rolling"
-              style={{
-                opacity: showMixedStreamLoading ? '0.7' : '0',
-              }}
-            ></div>
-          </div>
-          {current.matches({
-            live: { publishing: { final: { audio: 'unmuted' } } },
-          }) ? (
-            <VolumeMeterCanvas localStream={localStream} />
-          ) : (
-            <div className="w-full h-2" />
-          )}
-        </>
-      )}
 
       {showUserNameEditForm && (
         <div className="flex flex-col justify-between px-4 py-4 bg-white sm:flex-row">
@@ -360,6 +327,39 @@ const Room = (props: Props) => {
             Leave
           </Button>
         </div>
+      )}
+
+      {showLocalStream && (
+        <>
+          <VolumeMeterCanvas localStream={localStream} />
+          <Video stream={localStream} muted={true} />
+        </>
+      )}
+
+      {showMixedStream && (
+        <>
+          {current.matches({
+            live: { publishing: { final: { audio: 'unmuted' } } },
+          }) ? (
+            <VolumeMeterCanvas localStream={localStream} />
+          ) : (
+            <div className="w-full h-2" />
+          )}
+          <div className="relative">
+            <Video stream={mixedMediaStream} muted={false} />
+            <RemoteMixedStreamGrid
+              remoteStreamsLength={remoteStreams.length}
+              activeStreamNumber={activeStreamNumber}
+              remoteStreams={remoteStreams}
+            />
+            <div
+              className="absolute top-0 left-0 w-full h-full rolling"
+              style={{
+                opacity: showMixedStreamLoading ? '0.7' : '0',
+              }}
+            ></div>
+          </div>
+        </>
       )}
     </main>
   )
