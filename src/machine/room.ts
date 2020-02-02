@@ -104,43 +104,53 @@ async function joinRoom(token: string) {
 
 const subMixStream = (remoteStreams: any) =>
   new Promise(async (resolve, reject) => {
-    let mixedStream
-    for (const stream of remoteStreams) {
-      if (
-        stream.id.includes('common') &&
-        (stream.source.audio === 'mixed' || stream.source.video === 'mixed')
-      ) {
-        mixedStream = stream
+    try {
+      let mixedStream
+      for (const stream of remoteStreams) {
+        if (
+          stream.id.includes('common') &&
+          (stream.source.audio === 'mixed' || stream.source.video === 'mixed')
+        ) {
+          mixedStream = stream
+        }
       }
+
+      const subscription = await conference.subscribe(mixedStream, {
+        audio: { codecs: [{ name: 'opus' }] },
+        video: { codecs: [{ name: 'h264' }] },
+      })
+      // console.log('Subscription info:', subscription)
+      subscription.addEventListener('error', (err: any) => {
+        console.log('Subscription error: ' + err.error.message)
+        reject(err.error)
+      })
+
+      resolve(mixedStream)
+    } catch (err) {
+      reject(err)
     }
-
-    const subscription = await conference.subscribe(mixedStream, {
-      audio: { codecs: [{ name: 'opus' }] },
-      video: { codecs: [{ name: 'h264' }] },
-    })
-    // console.log('Subscription info:', subscription)
-    subscription.addEventListener('error', (err: any) => {
-      console.log('Subscription error: ' + err.error.message)
-    })
-
-    resolve(mixedStream)
   })
 
 const pubLocalStream = (localStream: MediaStream, userName: string) =>
   new Promise(async (resolve, reject) => {
-    const toPubLocalStream = new Owt.Base.LocalStream(
-      localStream,
-      new Owt.Base.StreamSourceInfo('mic', 'camera'),
-      { userName }
-    )
-    const pubedLocalStream = await conference.publish(toPubLocalStream, {
-      audio: [{ codec: { name: 'opus' }, maxBitrate: 300 }],
-      video: [{ codec: { name: 'h264' }, maxBitrate: 2048 }],
-    })
-    pubedLocalStream.addEventListener('error', (err: any) => {
-      console.log('Publication error: ' + err.error.message)
-    })
-    resolve(pubedLocalStream)
+    try {
+      const toPubLocalStream = new Owt.Base.LocalStream(
+        localStream,
+        new Owt.Base.StreamSourceInfo('mic', 'camera'),
+        { userName }
+      )
+      const pubedLocalStream = await conference.publish(toPubLocalStream, {
+        audio: [{ codec: { name: 'opus' }, maxBitrate: 300 }],
+        video: [{ codec: { name: 'h264' }, maxBitrate: 2048 }],
+      })
+      pubedLocalStream.addEventListener('error', (err: any) => {
+        console.log('Publication error: ' + err.error.message)
+        reject(err.error)
+      })
+      resolve(pubedLocalStream)
+    } catch (err) {
+      reject(err)
+    }
   })
 
 async function mixPubedLocalStream(roomId: string, streamId: string) {
@@ -493,7 +503,17 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
                   onError: {
                     target: 'failed',
                     actions: assign({
-                      errorMessage: (context, event) => event.data.message,
+                      errorName: (context, event) => {
+                        console.log('subMixStream errorName:', event.data.name)
+                        return event.data.name
+                      },
+                      errorMessage: (context, event) => {
+                        console.log(
+                          'subMixStream errorMessage:',
+                          event.data.message
+                        )
+                        return event.data.message
+                      },
                     }),
                   },
                 },
@@ -528,7 +548,20 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
                   onError: {
                     target: 'failed',
                     actions: assign({
-                      errorMessage: (context, event) => event.data.message,
+                      errorName: (context, event) => {
+                        console.log(
+                          'pubLocalStream errorName:',
+                          event.data.name
+                        )
+                        return event.data.name
+                      },
+                      errorMessage: (context, event) => {
+                        console.log(
+                          'pubLocalStream errorMessage:',
+                          event.data.message
+                        )
+                        return event.data.message
+                      },
                     }),
                   },
                 },
@@ -547,7 +580,20 @@ const roomMachine = Machine<RoomContext, RoomStateSchema, any>(
                   onError: {
                     target: 'failed',
                     actions: assign({
-                      errorMessage: (context, event) => event.data.message,
+                      errorName: (context, event) => {
+                        console.log(
+                          'mixPubedLocalStream errorName:',
+                          event.data.name
+                        )
+                        return event.data.name
+                      },
+                      errorMessage: (context, event) => {
+                        console.log(
+                          'mixPubedLocalStream errorMessage:',
+                          event.data.message
+                        )
+                        return event.data.message
+                      },
                     }),
                   },
                 },
