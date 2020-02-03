@@ -375,6 +375,18 @@ const Room = (props: Props) => {
           </div>
         </>
       )}
+
+      <footer className="my-4">
+        <p className="text-center text-gray-500">
+          This app is{' '}
+          <a
+            href="https://github.com/lzl/try.yolk.link"
+            className="border-b hover:text-gray-700 hover:border-gray-700"
+          >
+            open source
+          </a>
+        </p>
+      </footer>
     </main>
   )
 }

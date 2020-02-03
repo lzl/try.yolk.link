@@ -206,7 +206,7 @@ const Home = (props: RouteComponentProps) => {
           </form>
         </div>
       </section>
-      <footer className="my-8">
+      <footer className="my-4">
         <p className="text-center text-gray-500">
           Made by{' '}
           <a
