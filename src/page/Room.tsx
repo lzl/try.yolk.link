@@ -39,16 +39,6 @@ const Room = (props: Props) => {
   useLogRoomInterval({ roomId })
 
   useEffect(() => {
-    const recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]')
-    const currentRoom = recentRooms.find((r: any) => r.roomId === roomId)
-    const otherRooms = recentRooms.filter((r: any) => r.roomId !== roomId)
-    const newRecentRooms = currentRoom
-      ? [currentRoom, ...otherRooms]
-      : [{ roomId }, ...otherRooms]
-    localStorage.setItem('recentRooms', JSON.stringify(newRecentRooms))
-  }, [roomId])
-
-  useEffect(() => {
     return function cleanup() {
       if (conferenceInfo && conference) {
         conference.leave()
